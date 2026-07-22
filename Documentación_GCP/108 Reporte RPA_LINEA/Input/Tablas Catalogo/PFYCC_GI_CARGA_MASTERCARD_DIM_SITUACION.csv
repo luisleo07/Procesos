@@ -1,0 +1,10 @@
+Sit,Descripcion,Detalle
+1,ACTIVO,SITUACIÓN 1 : Activo con movimiento.
+2,S/MOV 12 MESES,SITUACIÓN 2 : 1 año sin movimiento.
+3,CERRADO,SITUACIÓN 3 : Bloqueado.
+4,S/MOV 3 MESES,SITUACIÓN 4 : Sin movimiento mas de 4 meses.
+5,NUEVO POS I,SITUACIÓN 5 : Nuevo POS I.
+6,S/MOV 6 MESES,SITUACIÓN 6 : Sin movimiento mas de 6 meses.
+7,NUEVO,SITUACIÓN 7 : Nuevo.
+8,NUEVO S/MOV,SITUACIÓN 8 : Nuevo sin movimiento.
+9,BLOQUEO TEMPORAL,SITUACIÓN 9 : Bloqueo temporal.

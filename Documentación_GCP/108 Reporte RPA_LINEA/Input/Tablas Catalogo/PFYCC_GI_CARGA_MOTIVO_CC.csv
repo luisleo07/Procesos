@@ -1,0 +1,43 @@
+Razon,Descripcion,Categoria
+4808,Transaccion no autorizada por emisor,Autorización
+4807,Tarjeta boletinada,Autorización
+4812,Tarjeta no existe,Autorización
+4853,Bienes/servicios no proporcionados - Devolucion no procesada,Servicios/Mercadería - Disputas del consumidor
+4855,Bienes/servicios no proporcionados - Cancelados,Servicios/Mercadería - Disputas del consumidor
+4854,Disputa del tarjetahabiente - Motivo otros,Servicios/Mercadería - Disputas del consumidor
+4859,Adenda a transacción, No show, Disputa ATM,Servicios/Mercadería - Disputas del consumidor
+4841,Transaccion recurrente cancelada,Servicios/Mercadería - Disputas del consumidor
+4860,Credito no procesado,Servicios/Mercadería - Disputas del consumidor
+4837,Fraude según tarjetahabiente,Fraude
+4840,Fraude según tarjetahabiente,Fraude
+4849,Fraude según tarjetahabiente,Fraude
+4863,Fraude según tarjetahabiente,Fraude
+4870,Fraude según tarjetahabiente,Fraude
+4871,Fraude según tarjetahabiente,Fraude
+4834,"Procesado múltiple, error en importe, fuera de fecha, pago otro medio",Errores de procesamiento
+4831,Importe incorrecto,Errores de procesamiento
+4842,Presentación tardía,Errores de procesamiento
+4846,Moneda incorrecta,Errores de procesamiento
+28,Copia Voucher Presencial,Sol. Copia
+30,Copia Voucher No Presencial,Sol. Copia
+33,Copia Voucher Presencial (Fraude),Sol. Copia
+10.1,10.1 Fraud - EMV Liability Shift Counterfeit,Fraude
+10.2,10.2 Fraud - EMV Liability Shift Non-Counterfeit,Fraude
+10.3,10.3 Fraud - Card Present Environment,Fraude
+10.4,10.4 Fraud - Card Absent Environment,Fraude
+11.3,11.3 Authorization - No Authorization,Autorización
+12.1,12.1 Processing Error - Late Presentment,Errores de procesamiento
+12.2,12.2 Processing Error - Incorrect Transaction Code,Errores de procesamiento
+12.3,12.3 Processing Error - Incorrect Currency,Errores de procesamiento
+12.5,12.5 Processing Error - Incorrect Amount,Errores de procesamiento
+12.6,12.6 Duplicate Processing/Paid by Other Means,Errores de procesamiento
+12.6.1,12.6.1 Processing Error - Duplicate Processing,Errores de procesamiento
+12.6.2,12.6.2 Processing Error - Paid by Other Means,Errores de procesamiento
+12.7,12.7 Processing Error - Invalid Data,Errores de procesamiento
+13.1,13.1 Consumer - Merchandise/Services Not Received,Servicios/Mercadería - Disputas del consumidor
+13.2,13.2 Consumer - Cancelled Recurring Transaction,Servicios/Mercadería - Disputas del consumidor
+13.3,13.3 Consumer - Not as Described/Defective,Servicios/Mercadería - Disputas del consumidor
+13.6,13.6 Consumer - Credit Not Processed,Servicios/Mercadería - Disputas del consumidor
+13.7,13.7 Consumer - Cancelled Merchandise/Services,Servicios/Mercadería - Disputas del consumidor
+13.5,13.5 Consumer - Misrepresentation,Servicios/Mercadería - Disputas del consumidor
+13.4,13.4 Consumer - Counterfeit Merchandise,Servicios/Mercadería - Disputas del consumidor
