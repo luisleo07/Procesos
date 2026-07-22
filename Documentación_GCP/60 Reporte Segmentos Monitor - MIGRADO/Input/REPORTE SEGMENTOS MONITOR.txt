@@ -1,0 +1,34 @@
+--CORPORACIONES
+ 
+   SELECT  [nroruc]
+      ,[cta_esp_anterior]
+      ,[situac_anterior]
+      ,[cta_esp_actual]
+      ,[situac_actual]
+      ,[tipo_cambio]
+      ,fecha_ejecucion
+      ,[accion]
+FROM SEGMENTOS_MONITOR
+WHERE fecha_ejecucion = (
+    SELECT MAX(fecha_ejecucion) 
+    FROM SEGMENTOS_MONITOR
+)
+AND cta_esp_actual = 'C'
+
+
+--EMPRESA
+ 
+   SELECT distinct [nroruc]
+      ,[cta_esp_anterior]
+      ,[situac_anterior]
+      ,[cta_esp_actual]
+      ,[situac_actual]
+      ,[tipo_cambio]
+      ,fecha_ejecucion
+      ,[accion]
+FROM SEGMENTOS_MONITOR
+WHERE fecha_ejecucion = (
+    SELECT MAX(fecha_ejecucion) 
+    FROM SEGMENTOS_MONITOR
+)
+AND cta_esp_actual = 'E'
