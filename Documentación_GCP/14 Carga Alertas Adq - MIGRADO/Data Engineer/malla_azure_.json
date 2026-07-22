@@ -1,0 +1,247 @@
+{
+    "name": "pl_t_izp_acf_vwj08851_sql_adls_prd",
+    "properties": {
+        "activities": [
+            {
+                "name": "Fecha",
+                "type": "Lookup",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "7.00:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "SqlServerSource",
+                        "sqlReaderQuery": {
+                            "value": "@concat('declare @fecha_inicial date;\ndeclare @fecha_final date;\nset @fecha_inicial =''',pipeline().parameters.pFechaInicial,''';\nset @fecha_final =''',pipeline().parameters.pFechaFinal,''';\ndeclare @dias int;\nselect @dias= datediff(day,@fecha_inicial,@fecha_final);\ndeclare @i int;\nset @i=0;\n\nIF OBJECT_ID(N''tempdb..#myTabla1'') IS NOT NULL\nBEGIN\n   DROP TABLE #myTabla1;\nEND \n\ncreate TABLE #myTabla1 (FECHA varchar(10) null);\nwhile @i<=@dias\nbegin\n\tinsert into #myTabla1 select Concat(CONVERT(VARCHAR(10),DATEADD(DD,@i,@fecha_inicial),112),''.0'')\n\tset @i=@i+1;\nend\n\nselect *from #myTabla1 ORDER BY FECHA ASC;\n')",
+                            "type": "Expression"
+                        },
+                        "queryTimeout": "02:00:00",
+                        "partitionOption": "None"
+                    },
+                    "dataset": {
+                        "referenceName": "IST_Tablas",
+                        "type": "DatasetReference"
+                    },
+                    "firstRowOnly": false
+                }
+            },
+            {
+                "name": "ForEach izp_acf_vwj08851",
+                "type": "ForEach",
+                "dependsOn": [
+                    {
+                        "activity": "Fecha",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "items": {
+                        "value": "@activity('Fecha').output.value",
+                        "type": "Expression"
+                    },
+                    "isSequential": true,
+                    "activities": [
+                        {
+                            "name": "var_ruta",
+                            "type": "SetVariable",
+                            "dependsOn": [],
+                            "policy": {
+                                "secureOutput": false,
+                                "secureInput": false
+                            },
+                            "userProperties": [],
+                            "typeProperties": {
+                                "variableName": "var_ruta",
+                                "value": {
+                                    "value": "@concat('Raw/Monitor/Transaccional/',toLower(variables('var_tabla')),'/',substring(item().Fecha,0,4),'/',substring(item().Fecha,4,2))",
+                                    "type": "Expression"
+                                }
+                            }
+                        },
+                        {
+                            "name": "var_nombre_archivo",
+                            "type": "SetVariable",
+                            "dependsOn": [
+                                {
+                                    "activity": "var_ruta",
+                                    "dependencyConditions": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            ],
+                            "policy": {
+                                "secureOutput": false,
+                                "secureInput": false
+                            },
+                            "userProperties": [],
+                            "typeProperties": {
+                                "variableName": "var_nombre_archivo",
+                                "value": {
+                                    "value": "@concat(toLower(variables('var_tabla')),'_',substring(item().Fecha,0,8),'.parquet')",
+                                    "type": "Expression"
+                                }
+                            }
+                        },
+                        {
+                            "name": "cd izp_acf_vwj08881",
+                            "type": "Copy",
+                            "dependsOn": [
+                                {
+                                    "activity": "var_nombre_archivo",
+                                    "dependencyConditions": [
+                                        "Succeeded"
+                                    ]
+                                },
+                                {
+                                    "activity": "week_num",
+                                    "dependencyConditions": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            ],
+                            "policy": {
+                                "timeout": "0.12:00:00",
+                                "retry": 0,
+                                "retryIntervalInSeconds": 30,
+                                "secureOutput": false,
+                                "secureInput": false
+                            },
+                            "userProperties": [],
+                            "typeProperties": {
+                                "source": {
+                                    "type": "SqlServerSource",
+                                    "sqlReaderQuery": {
+                                        "value": "@concat('\nSELECT \n    *\nFROM ',variables('var_esquema'),'.',variables('var_tabla'),substring(item().Fecha,0,4),substring(activity('week_num').output.firstRow.week_number,0,2),'\n WHERE VWJEFECHASEND  = ''',substring(item().Fecha,0,8),'''; \n')",
+                                        "type": "Expression"
+                                    },
+                                    "queryTimeout": "02:00:00",
+                                    "partitionOption": "None"
+                                },
+                                "sink": {
+                                    "type": "ParquetSink",
+                                    "storeSettings": {
+                                        "type": "AzureBlobFSWriteSettings"
+                                    },
+                                    "formatSettings": {
+                                        "type": "ParquetWriteSettings"
+                                    }
+                                },
+                                "enableStaging": false,
+                                "translator": {
+                                    "type": "TabularTranslator",
+                                    "typeConversion": true,
+                                    "typeConversionSettings": {
+                                        "allowDataTruncation": true,
+                                        "treatBooleanAsNumber": false
+                                    }
+                                }
+                            },
+                            "inputs": [
+                                {
+                                    "referenceName": "ds_sql_bdriesgo_prod",
+                                    "type": "DatasetReference",
+                                    "parameters": {
+                                        "esquema": {
+                                            "value": "@variables('var_esquema')",
+                                            "type": "Expression"
+                                        },
+                                        "tabla": {
+                                            "value": "@variables('var_tabla')",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                }
+                            ],
+                            "outputs": [
+                                {
+                                    "referenceName": "ds_apa_parquet_prod",
+                                    "type": "DatasetReference",
+                                    "parameters": {
+                                        "par_ruta": {
+                                            "value": "@variables('var_ruta')",
+                                            "type": "Expression"
+                                        },
+                                        "par_nombre_archivo": {
+                                            "value": "@variables('var_nombre_archivo')",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "week_num",
+                            "type": "Lookup",
+                            "dependsOn": [],
+                            "policy": {
+                                "timeout": "0.12:00:00",
+                                "retry": 0,
+                                "retryIntervalInSeconds": 30,
+                                "secureOutput": false,
+                                "secureInput": false
+                            },
+                            "userProperties": [],
+                            "typeProperties": {
+                                "source": {
+                                    "type": "SqlServerSource",
+                                    "sqlReaderQuery": {
+                                        "value": "@concat('\n    DECLARE @Fecha DATE;\n    SET @Fecha = ''',substring(item().Fecha,0,8),''';\n    DECLARE @NumeroSemana INT;\n    DECLARE @AñoActual INT = YEAR(@Fecha);\n    DECLARE @PrimerDiaAño DATE = DATEFROMPARTS(@AñoActual, 1, 1);\n    \n    -- Ajustar según el primer día de la semana configurado\n    DECLARE @DiaSemanaInicio INT = DATEPART(WEEKDAY, @PrimerDiaAño);\n    \n    -- Convertir de formato SQL (domingo=1) al formato personalizado\n    SET @DiaSemanaInicio = (@DiaSemanaInicio + @@DATEFIRST - 1) % 7 + 1;\n    \n    -- Calcular el número de semana basado en la diferencia de días\n    SET @NumeroSemana = (DATEDIFF(DAY, @PrimerDiaAño, @Fecha) + @DiaSemanaInicio - 2) / 7 + 1;\n    \n    SELECT CONVERT(VARCHAR(2), @NumeroSemana) AS week_number;\n')",
+                                        "type": "Expression"
+                                    },
+                                    "queryTimeout": "02:00:00",
+                                    "partitionOption": "None"
+                                },
+                                "dataset": {
+                                    "referenceName": "IST_Tablas",
+                                    "type": "DatasetReference"
+                                },
+                                "firstRowOnly": true
+                            }
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "pFechaInicial": {
+                "type": "string",
+                "defaultValue": "20250101"
+            },
+            "pFechaFinal": {
+                "type": "string",
+                "defaultValue": "20250101"
+            }
+        },
+        "variables": {
+            "var_tabla": {
+                "type": "String",
+                "defaultValue": "izp_acf_vwj08851"
+            },
+            "var_ruta": {
+                "type": "String"
+            },
+            "var_nombre_archivo": {
+                "type": "String"
+            },
+            "var_esquema": {
+                "type": "String",
+                "defaultValue": "dbo"
+            }
+        },
+        "folder": {
+            "name": "MC2053 - Arturo Quispe/Ingesta/GCP/bdriesgo/transaccional"
+        },
+        "annotations": [],
+        "lastPublishTime": "2025-05-07T01:47:05Z"
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}

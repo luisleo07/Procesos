@@ -1,0 +1,110 @@
+################################################
+## DMDR LOW DIARIO
+################################################
+
+
+import os
+import json
+import requests
+
+#DEV
+#secret_token = 'izi-cyber-token-7rMVpUvdo8T3BlbkFJvlPEtwcw'
+#PRD
+secret_token = 'prd-izipay-token-7rMVpUvdo8T3BlbkFJvlPEtwcw'
+
+#DEV
+#url = "https://dev-izi-cyber-api-v1-dl7olq7kiq-uc.a.run.app"
+#PRD
+url = "https://prd-izi-cyber-api-v1-a3dhp75ena-uc.a.run.app"
+
+from datetime import datetime, timedelta
+
+# Define tus fechas de inicio y fin en formato YYYY-MM-DD
+fecha_ini = "2025-08-01"
+fecha_fin = "2025-08-28"
+
+# Bucle por cada fecha del rango
+fecha_actual = datetime.strptime(fecha_ini, "%Y-%m-%d") + timedelta(days=1)
+fecha_limite = datetime.strptime(fecha_fin, "%Y-%m-%d") + timedelta(days=1)
+
+endpoint = f"{url}/cyber"
+headers = {'token': secret_token}
+
+ORGANIZATION_ID_DMDR_LOW_DIARIO="izipay_low"
+MERCHANT_KEY_ID_DMDR_LOW_DIARIO="a4a51476-564b-41f8-b95a-50a3374dfd2e"
+MERCHANT_SECRET_KEY_ID_DMDR_LOW_DIARIO="JnlUrHHtGXf41VBWilrJP74CXx7mDCqrHMMQztMVlsk="
+REPORT_NAME_DMDR_LOW_DIARIO="DMDR-LOW-DIARIO"
+
+data = {}
+data["organization_id"] = ORGANIZATION_ID_DMDR_LOW_DIARIO
+data["merchant_key_id"] = MERCHANT_KEY_ID_DMDR_LOW_DIARIO
+data["merchant_secret_key_id"] = MERCHANT_SECRET_KEY_ID_DMDR_LOW_DIARIO
+data["report_name"] = REPORT_NAME_DMDR_LOW_DIARIO
+
+while fecha_actual <= fecha_limite:
+    fecha_str = fecha_actual.strftime("%Y-%m-%d") 
+    data["fecha"] = fecha_str
+    fecha_archivo = (fecha_actual - timedelta(days=1)).strftime("%Y-%m-%d")
+
+    response = requests.post(endpoint, json=data, headers=headers)
+    if(response.json()['success']==True):
+        print(f"Correcto Ingreso de {fecha_archivo}")
+    else:
+        print(f"ERROR -> Incorrecto Ingreso de {fecha_archivo}")
+    # Avanzar un día
+    fecha_actual += timedelta(days=1)
+
+################################################
+## DMDR HIGH DIARIO
+################################################
+
+import os
+import json
+import requests
+
+#DEV
+#secret_token = 'izi-cyber-token-7rMVpUvdo8T3BlbkFJvlPEtwcw'
+#PRD
+secret_token = 'prd-izipay-token-7rMVpUvdo8T3BlbkFJvlPEtwcw'
+
+#DEV
+#url = "https://dev-izi-cyber-api-v1-dl7olq7kiq-uc.a.run.app"
+#PRD
+url = "https://prd-izi-cyber-api-v1-a3dhp75ena-uc.a.run.app"
+
+from datetime import datetime, timedelta
+
+# Define tus fechas de inicio y fin en formato YYYY-MM-DD
+fecha_ini = "2025-08-10"
+fecha_fin = "2025-08-28"
+
+# Bucle por cada fecha del rango
+fecha_actual = datetime.strptime(fecha_ini, "%Y-%m-%d") + timedelta(days=1)
+fecha_limite = datetime.strptime(fecha_fin, "%Y-%m-%d") + timedelta(days=1)
+
+endpoint = f"{url}/cyber"
+headers = {'token': secret_token}
+
+ORGANIZATION_ID_DMDR_HIGH_DIARIO="izipay_high"
+MERCHANT_KEY_ID_DMDR_HIGH_DIARIO="a8fe761c-6179-487c-863b-ffb2dc03e2b1"
+MERCHANT_SECRET_KEY_ID_DMDR_HIGH_DIARIO="pPudDBsvHEvvzh7LZAj/1td0FwnWLhQnDZsCnik2HbM="
+REPORT_NAME_DMDR_HIGH_DIARIO="DMDR-HIGH-DIARIO"
+
+data = {}
+data["organization_id"] = ORGANIZATION_ID_DMDR_HIGH_DIARIO
+data["merchant_key_id"] = MERCHANT_KEY_ID_DMDR_HIGH_DIARIO
+data["merchant_secret_key_id"] = MERCHANT_SECRET_KEY_ID_DMDR_HIGH_DIARIO
+data["report_name"] = REPORT_NAME_DMDR_HIGH_DIARIO
+
+while fecha_actual <= fecha_limite:
+    fecha_str = fecha_actual.strftime("%Y-%m-%d") 
+    data["fecha"] = fecha_str
+    fecha_archivo = (fecha_actual - timedelta(days=1)).strftime("%Y-%m-%d")
+
+    response = requests.post(endpoint, json=data, headers=headers)
+    if(response.json()['success']==True):
+        print(f"Correcto Ingreso de {fecha_archivo}")
+    else:
+        print(f"ERROR -> Incorrecto Ingreso de {fecha_archivo}")
+    # Avanzar un día
+    fecha_actual += timedelta(days=1)
