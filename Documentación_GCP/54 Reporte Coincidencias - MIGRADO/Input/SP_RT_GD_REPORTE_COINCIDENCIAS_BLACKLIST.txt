@@ -1,0 +1,285 @@
+USE [BDRIESGO]
+GO
+/****** Object:  StoredProcedure [dbo].[SP_RT_GD_REPORTE_COINCIDENCIAS_BLACKLIST]    Script Date: 17/08/2025 23:30:26 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER procedure [dbo].[SP_RT_GD_REPORTE_COINCIDENCIAS_BLACKLIST]
+AS
+BEGIN
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+TRUNCATE TABLE RT_GD_REPORTE_COINCIDENCIAS_BL;
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+with telefono as (			
+	select Telefono = TELEFO 		
+		,codigo
+		,Fecha_Carga = fecblq
+		,Fila = ROW_NUMBER() OVER (PARTITION BY TELEFO  ORDER BY fecblq asc)	
+	from PFYCC_GI_TRANS_MCESTAB	
+	where blq_frau = 1	
+			and TELEFO is not null
+			and TELEFO not in ('999999999','1','0')
+	)		
+
+,Base_telefono as (			
+	select *		
+	from telefono		
+	where Fila = 1		
+	)		
+
+,correo as (			
+	select mailrleg
+		,codigo
+		,Fecha_Carga = fecblq
+		,Fila = ROW_NUMBER() OVER (PARTITION BY mailrleg ORDER BY fecblq)	
+	from PFYCC_GI_TRANS_MCESTAB
+	where blq_frau = 1			
+			and mailrleg not in ( 'NA', '-', 'KELYMADELEINE6@GMAIL.COM')
+			and mailrleg is not null
+	)		
+
+,base_correo as (			
+	select *		
+	from correo		
+	where Fila = 1		
+	)		
+
+,cuenta as (			
+	select nrocta	
+		,codigo
+		,Fecha_Carga = fecblq
+		,Fila = ROW_NUMBER() OVER (PARTITION BY nrocta ORDER BY fecblq asc)	
+	from PFYCC_GI_TRANS_MCESTAB		
+	where blq_frau = 1	
+			and nrocta <> 'NA'
+			and nrocta is not null
+			and nrocta not in ('9999990', '0006328156', '6328156','')
+	)		
+
+,base_cuenta as (			
+	select *		
+	from cuenta		
+	where Fila = 1		
+	)		
+ 
+,documento as (			
+
+	select DNI 		
+		,codigo
+		,Fecha_Carga = fecblq
+		,Fila = ROW_NUMBER() OVER (PARTITION BY DNI ORDER BY fecblq asc)	
+	from PFYCC_GI_TRANS_MCESTAB		
+	where blq_frau = 1 
+			and DNI is not null
+			and DNI not in ('1','00000001')
+
+	union all 		
+
+	select nroruc		
+		,codigo
+		,Fecha_Carga = fecblq
+		,Fila = ROW_NUMBER() OVER (PARTITION BY nroruc ORDER BY fecblq asc)	
+	from PFYCC_GI_TRANS_MCESTAB		
+	where blq_frau = 1
+			and nroruc is not null
+			AND nroruc NOT IN ('20603235780','00000001')
+	)		
+
+,base_doc as (			
+
+	select *	
+	from documento		
+	where Fila = 1		
+	)		
+ 
+,demografico as (
+
+	select *
+	from PFYCC_GI_TRANS_MCESTAB
+		where facili_pago in ('izipay')
+			and (NOMBRE_PRODUCTO <> 'cajero corresponsal' OR NOMBRE_PRODUCTO IS NULL)
+			and fecape >= '2023-01-01'
+			and segmento in ('negocio', 'empresa')
+
+)
+ 
+ --select * from demografico 
+
+,final_demo as(		
+ 
+	select DISTINCT a.codigo
+		,CODIGO_BL=b.codigo
+		,mailrleg	
+		,Coincidencia = 1
+	from demografico	a
+	left join Base_telefono b on a.telefo = b.Telefono	and a.fecape>b.Fecha_Carga
+	where b.Telefono is not null
+
+	union all
+
+	select  DISTINCT a.codigo
+		,CODIGO_BL=b.codigo
+		,b.mailrleg
+		,Coincidencia = 2
+	from demografico	a
+	left join base_correo b on a.mailrleg = b.mailrleg and a.fecape>b.Fecha_Carga
+	where b.mailrleg is not null
+ 
+	union all
+ 
+	select DISTINCT a.codigo
+		,CODIGO_BL=b.codigo
+		,mailrleg
+		,Coincidencia = 3
+	from demografico	a
+	left join base_cuenta b on a.nrocta = b.nrocta and a.fecape>b.Fecha_Carga
+	where b.nrocta is not null
+ 
+	union all
+ 
+	select DISTINCT a.codigo
+		,CODIGO_BL=b.codigo
+		,mailrleg
+		,Coincidencia = 4
+	from demografico	a
+	left join base_doc b on a.nroruc = b.DNI and a.fecape>b.Fecha_Carga
+	where b.DNI is not null
+ 
+	union all
+ 
+	select DISTINCT a.codigo
+		,CODIGO_BL=b.codigo
+		,mailrleg
+		,Coincidencia = 5
+	from demografico	a
+	left join base_doc b on a.DNI = b.DNI and a.fecape>b.Fecha_Carga
+	where b.DNI is not null
+
+	 union all
+   select DISTINCT a.codigo
+		,CODIGO_BL=b.codigo
+		,mailrleg
+		,Coincidencia = 6
+	from demografico	a
+	left join base_doc b on LEFT(a.nroruc,10) = CONCAT('10',b.DNI) and a.fecape>b.Fecha_Carga
+	where b.DNI is not null
+)	
+
+,demo as (
+
+	select a.codigo
+		,CODIGO_BL
+		,a.mailrleg
+		--,b.blq_frau
+		,b.motblq
+		,b.observ
+		,Telefono = SUM(case when Coincidencia = 1 then 1 else 0 end)
+		,Correo = SUM(case when Coincidencia = 2 then 1 else 0 end)
+		,Cuenta = SUM(case when Coincidencia = 3 then 1 else 0 end)
+		,NroDoc = SUM(case when Coincidencia = 4 then 1 else 0 end)
+		,RepLeg = SUM(case when Coincidencia = 5 then 1 else 0 end)
+		--,NroDoc_10 = SUM(case when Coincidencia = 6 then 1 else 0 end)
+	from final_demo a
+	left join PFYCC_GI_TRANS_MCESTAB b on a.CODIGO_BL = b.codigo
+	where b.motblq in ('04','05','SEG','FRA') OR
+	     (b.motblq = '10' AND (b.observ LIKE '%4 %' OR b.observ LIKE '%6 %' OR b.observ LIKE '%7 %' OR b.observ LIKE '%9 %' OR b.observ LIKE '%10 %') )
+      OR (b.motblq = '14' AND b.observ LIKE '%5 %' )
+   	group by a.codigo
+		,CODIGO_BL
+		,a.mailrleg
+		,b.motblq
+		,b.observ
+
+)
+
+--select * from demo
+ 
+--,metricas as (			
+
+--select Codigo	= Codigo		
+--	,Vol = sum(Volumen)		
+--	,TRX = sum(Trx)		
+--	,Vol_Fraude = replace(convert(varchar,sum(VolFraude)),',','.')		
+--	,TRX_Fraude = sum(TrxFraude)
+--	,Vol_CC = sum(VolCC)		
+--	,TRX_CC = sum(TrxCC)		
+--	,Deuda = sum(VolDeudaCC)	
+--	,TrxDeuda = SUM(TrxDeudaCC)
+--from RT_GD_REPORTE_GERENCIAL
+--where FechaTrx >='2023-01-01'			
+--group by Codigo			
+
+--)--Fin de With
+ 
+INSERT INTO RT_GD_REPORTE_COINCIDENCIAS_BL
+
+select a.*
+	--,b.*
+	,c.fecape
+	--,C.fecblq
+	,c.situac
+	,blq_frau
+	,NroDoc = nroruc
+	,RepLegal = DNI
+	, segmento
+	, C.Nomcom
+	, C.nrocta
+	, c.telefo
+	, c.NOMBRE_PRODUCTO
+	, c.Dealer
+	,Grupo = case when a.Telefono = 1 and a.Correo = 1 and a.Cuenta = 1 and a.NroDoc = 1 and a.RepLeg = 1 then 'Coincidencia Completa' 
+				  when a.Telefono = 1 and a.Correo = 1 and a.Cuenta = 1 and a.NroDoc = 1 then 'NroDoc, Cuenta, Telefono y Correo' 
+				  when a.Telefono = 1 and a.Correo = 1 and a.Cuenta = 1 and a.RepLeg = 1 then 'RRLL, Cuenta, Telefono y Correo' 
+				  when a.Telefono = 1 and a.Correo = 1 and a.NroDoc = 1 and a.RepLeg = 1 then 'NroDoc, RRLL, Telefono y Correo' 
+				  when a.Telefono = 1 and a.Cuenta = 1 and a.NroDoc = 1 and a.RepLeg = 1 then 'NroDoc, RRLL, Cuenta y Telefono' 
+				  when a.Correo = 1 and a.Cuenta = 1 and a.NroDoc = 1 and a.RepLeg = 1 then 'NroDoc, RRLL, Cuenta y Correo' 
+				  when a.Telefono = 1 and a.NroDoc = 1 and a.RepLeg = 1 then 'NroDoc, RRLL y Telefono' 
+				  when a.Correo = 1 and a.NroDoc = 1 and a.RepLeg = 1 then 'NroDoc, RRLL y Correo'
+				  when a.Cuenta = 1 and a.NroDoc = 1 and a.RepLeg = 1 then 'NroDoc, RRLL y Cuenta'
+				  when a.Telefono = 1 and a.Correo = 1 and a.RepLeg = 1 then 'RRLL, Correo y Telefono' 
+				  when a.Cuenta = 1 and a.Correo = 1 and a.RepLeg = 1 then 'RRLL, Cuenta y Correo'
+				  when a.Cuenta = 1 and a.Telefono = 1 and a.RepLeg = 1 then 'RRLL, Cuenta y Telefono'
+				  when a.Telefono = 1 and a.Cuenta = 1 and a.NroDoc = 1  then 'NroDoc, Cuenta y Telefono' 
+				  when a.Telefono = 1 and a.Correo = 1 and a.NroDoc = 1  then 'NroDoc, Correo y Telefono' 
+				  when a.Telefono = 1 and a.Cuenta = 1 and a.RepLeg = 1 then 'RRLL, Cuenta y Telefono' 
+				  when a.Telefono = 1 and a.Cuenta = 1 and a.Correo = 1 then 'Cuenta, Telefono y Correo' 
+				  when a.NroDoc = 1 and a.RepLeg = 1 then 'NroDoc y RRLL'
+				  when a.NroDoc = 1 and a.Cuenta = 1 then 'NroDoc y Cuenta'
+				  when a.NroDoc = 1 and a.Correo = 1 then 'NroDoc y Correo'
+				  when a.NroDoc = 1 and a.Telefono = 1 then 'NroDoc y Telefono'
+				  when a.RepLeg = 1 and a.Cuenta = 1 then 'RRLL y Cuenta'
+				  when a.RepLeg = 1 and a.Correo = 1 then 'RRLL y Correo'
+				  when a.RepLeg = 1 and a.Telefono = 1 then 'RRLL y Telefono'
+				  when a.Cuenta = 1 and a.Correo = 1 then 'Cuenta y Correo'
+				  when a.Cuenta = 1 and a.Telefono = 1 then 'Cuenta y Telefono'
+				  when a.Correo = 1 and a.Telefono = 1 then 'Correo y Telefono'
+				  when a.NroDoc = 1 then 'Solo NroDoc'
+				  when a.RepLeg = 1 then 'Solo RRLL'
+				  when a.Cuenta = 1 then 'Solo Cuenta'
+				  when a.Telefono = 1 then 'Solo Telefono'
+				  when a.Correo = 1 then 'Solo Correo'
+				  else 'OTRO' END
+from demo a
+--left join metricas b on a.codigo = b.codigo
+left join PFYCC_GI_TRANS_MCESTAB c on a.codigo=c.codigo
+WHERE C.fecape >= '2023-01-01' 
+and C.facili_pago = 'IZIPAY'
+and (C.NOMBRE_PRODUCTO <> 'cajero corresponsal' OR C.NOMBRE_PRODUCTO IS NULL)
+and C.Izipay_Ya = '0'
+and C.segmento in ('Negocio', 'empresa')
+AND C.SITUAC NOT IN ('3','9')
+AND nroruc NOT IN ('20603235780','20610313711','20604420157','20605474081')
+--and DNI <> '00000000001'
+and DNI not in ('00000000001','','26955241')
+and a.codigo NOT IN (Select codigo from CODIGOS_EXCLUIDOS_BL);
+
+
+END
+
+
