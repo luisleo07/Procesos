@@ -1,0 +1,405 @@
+USE [BDRIESGO]
+GO
+/****** Object:  StoredProcedure [dbo].[SP_PFYCC_GI_TRANS_MCESTAB]    Script Date: 15/04/2025 10:01:32 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[SP_PFYCC_GI_TRANS_MCESTAB]
+AS
+
+------------------------------------------------------------------------------------------
+--ELIMINAR DATOS DE TABLA CREADA
+truncate TABLE [PFYCC_GI_TRANS_MCESTAB];
+
+------------------------------------------------------------------------------------------
+with
+
+SIN_DUPLICADOS as (
+select *
+from (select *
+		,orden_dup = ROW_NUMBER() over(partition by codigo order by codigo asc)
+	from PFYCC_GI_CARGA_MCESTAB) a
+where a.orden_dup = 1
+)
+,LIMPIEZA_MCESTAB as (
+select A.codigo
+	  ,A.situac
+	  ,tip_ruc = case when len(A.nroruc) = 11 and left(A.nroruc,2) = '10' then 'RUC10'
+					  when len(A.nroruc) = 11 and left(A.nroruc,2) = '15' then 'RUC15'
+					  when len(A.nroruc) = 11 and left(A.nroruc,2) = '17' then 'RUC17'
+					  when len(A.nroruc) = 11 and left(A.nroruc,2) = '20' then 'RUC20'
+					  when len(A.nroruc) = 8 then 'DNI'
+					  when len(A.nroruc) = 9 then 'CE/PTP'
+					  else 'OTROS' end
+	  ,nroruc = REPLACE(replace(A.nroruc,'"',''),' ','')
+	  ,A.cta_esp
+	  ,segmento = S.segmento
+	  ,facili_pago = F.[Tipo_Facilitador]
+	  ,nomcom = REPLACE(A.nomcom,',',';')
+	  ,razsoc = REPLACE(A.razsoc,',',';')
+	  ,PGS = case when PGS = 'Y' then 'Y' else 'N' end
+	  ,Fec_afi_PGS= case when pgs = 'PPTR' and fec_afi_pgs ='00000000' then CONVERT(VARCHAR,getdate()-1,23)
+						when PGS = '' or PGS='N' or PGS = '-' then '' 
+						else CONVERT(VARCHAR,getdate()-1,23) end
+						--else cast(fec_afi_pgs as date) end
+	  ,Izipay_Ya = case when A.FLG_IZI_YA LIKE 'TK%' then 1--when REPLACE(A.contra,',',';') = 'tunki' then 1 
+						--when a.Dealer_Eje = 'AFILIADOR TUNKI' then 1
+					else 0 end
+	  ,A.moneda
+	  ,A.mcc
+	  ,giro = REPLACE(A.giro,',',';')
+	  ,HR_VISA_MC = case when A.mcc in ('4816',
+										'5122',
+										'5816',
+										'5912',
+										'5962',
+										'5966',
+										'5967',
+										'5968',
+										'5969',
+										'5993',
+										'5999',
+										'6051',
+										'6211',
+										'7273',
+										'7841',
+										'7994',
+										'7995'
+										) then 1
+					 else 0 end
+	  ,HR_SBS = case when A.mcc in ('1520',
+									'4457',
+									'4829',
+									'5094',
+									'5169',
+									'5521',
+									'5551',
+									'5599',
+									'5932',
+									'5933',
+									'5937',
+									'5944',
+									'5971',
+									'5972',
+									'6051',
+									'7333',
+									'7993',
+									'7994',
+									'7995',
+									'8398'
+									/*'3000',
+									'3009',
+									'3010',
+									'3013',
+									'3015',
+									'3018',
+									'3030',
+									'3039',
+									'3052',
+									'3055',
+									'3076',
+									'3082',
+									'3089',
+									'3102',
+									'3127',
+									'3242',
+									'3248',
+									'4511',
+									'4829',
+									'5094',
+									'6051',
+									'7801',
+									'7802',
+									'7994',
+									'7995',
+									'8398',
+									'8651',
+									'4457',
+									'5521',
+									'5551',
+									'5932',
+									'5933',
+									'5944',
+									'5971',
+									'5169',
+									'5599',
+									'5937',
+									'5972',
+									'7333',
+									'7993'*/
+									) then 1
+					 else 0 end
+	  ,A.cod_amex
+	  ,A.s_amex
+	  ,A.s_diners
+	  ,A.s_visa
+	  ,A.c_visa
+	  ,A.c_mastercard
+	  ,A.c_amex
+	  ,A.c_diners
+	  ,contra = REPLACE(A.contra,',',';')
+	  ,compañia = case --when A.nroruc = '20429324778' and A.contra not in (' IO-APP',' IO-PLINK',' IO-PWEB','IO-APP','IO-PLINK','IO-PWEB','IO-WEB','SCIO-APP','SCIO-PLINK','SCIO-PWEB') then 'IZIPAY-ADQ'
+					   --when A.nroruc = '20555530090' and A.contra not in (' IO-APP',' IO-PLINK',' IO-PWEB','IO-APP','IO-PLINK','IO-PWEB','IO-WEB','SCIO-APP','SCIO-PLINK','SCIO-PWEB') then 'IZIPAY-ADQ'
+					   --when A.nroruc = '20333372216' and A.contra not in (' IO-APP',' IO-PLINK',' IO-PWEB','IO-APP','IO-PLINK','IO-PWEB','IO-WEB','SCIO-APP','SCIO-PLINK','SCIO-PWEB') then 'IZIPAY-ADQ'
+					   --when A.nroruc = '20604068178' and A.contra not in (' IO-APP',' IO-PLINK',' IO-PWEB','IO-APP','IO-PLINK','IO-PWEB','IO-WEB','SCIO-APP','SCIO-PLINK','SCIO-PWEB') then 'IZIPAY-ADQ'
+					   --when A.nroruc = '20451770501' and A.contra not in (' IO-APP',' IO-PLINK',' IO-PWEB','IO-APP','IO-PLINK','IO-PWEB','IO-WEB','SCIO-APP','SCIO-PLINK','SCIO-PWEB') then 'IZIPAY-ADQ'
+					   --when A.nroruc = '20603543581' and A.contra not in (' IO-APP',' IO-PLINK',' IO-PWEB','IO-APP','IO-PLINK','IO-PWEB','IO-WEB','SCIO-APP','SCIO-PLINK','SCIO-PWEB') then 'IZIPAY-ADQ'
+					   --when A.nroruc = '20563525461' and A.contra not in (' IO-APP',' IO-PLINK',' IO-PWEB','IO-APP','IO-PLINK','IO-PWEB','IO-WEB','SCIO-APP','SCIO-PLINK','SCIO-PWEB') then 'IZIPAY-ADQ'
+					   --when A.nroruc = '20462540745' and A.contra not in (' IO-APP',' IO-PLINK',' IO-PWEB','IO-APP','IO-PLINK','IO-PWEB','IO-WEB','SCIO-APP','SCIO-PLINK','SCIO-PWEB') then 'IZIPAY-ADQ'
+					   --when A.nroruc = '20601612233' and A.contra not in (' IO-APP',' IO-PLINK',' IO-PWEB','IO-APP','IO-PLINK','IO-PWEB','IO-WEB','SCIO-APP','SCIO-PLINK','SCIO-PWEB') then 'IZIPAY-ADQ'
+					   --when A.nroruc = '20100030595' and A.contra not in (' IO-APP',' IO-PLINK',' IO-PWEB','IO-APP','IO-PLINK','IO-PWEB','IO-WEB','SCIO-APP','SCIO-PLINK','SCIO-PWEB') then 'IZIPAY-ADQ'
+					   --when A.nomcom like 'VD+*%' or A.nroruc = '20602370497' then 'IZIPAY-ADQ'
+					   when A.nomcom like 'IZI*%' or A.nroruc = '20603235780' then 'IZIPAY-FAC'
+					   --when A.contra in (' IO-APP',' IO-PLINK',' IO-PWEB','IO-APP','IO-PLINK','IO-PWEB','IO-WEB','SCIO-APP','SCIO-PLINK','SCIO-PWEB') and (A.nomcom like 'VD+*%' or A.nroruc = '20602370497') then 'INTEROPERABILIDAD-VD+'
+					   --when A.contra in (' IO-APP',' IO-PLINK',' IO-PWEB','IO-APP','IO-PLINK','IO-PWEB','IO-WEB','SCIO-APP','SCIO-PLINK','SCIO-PWEB') then 'INTEROPERABILIDAD'
+					   else 'IZIPAY-ADQ' end
+	  ,dire = REPLACE(A.dire,',',';')
+	  ,A.dpto
+	  ,A.prov
+	  ,dist = REPLACE(A.dist,',',';')
+	  ,A.cpos
+	  ,A.ubigeo
+	  ,telefo = REPLACE(A.telefo,' ','')
+	  ,fax = REPLACE(A.fax,' ','')
+	  ,A.clasef
+	  ,fecape = case --when A.codigo = '1036514' then '2021-10-28'--mod Jorge
+					  when A.fecape = '' then ''
+					  else cast(A.fecape as varchar) end
+	  --,fecmod = case when A.fecmod = '' then ''
+			--		  else cast(A.fecmod as VARCHAR) end
+	  ,fecmod = cast(
+					case 
+						when A.fecmod = '' or A.fecmod = '1900-01-01' then ''
+						else A.fecmod
+					end 
+				as varchar)
+
+	  --,fecblq = case when A.fecblq = '' then ''
+			--		  else cast(A.fecblq as VARCHAR) end
+	  ,fecblq = cast(
+					case 
+						when A.fecblq = '' or A.fecblq = '1900-01-01' then ''
+						else A.fecblq
+					end
+				as varchar)
+
+	  ,A.motblq
+	  ,observ = REPLACE(A.observ,',',';')
+	  ,blq_frau = case when A.situac = '3' and A.motblq in ('01','03','04','05','07','10','11','13','14','FRA','SEG') and A.observ not like ('%CAS%') then 1 else 0 end
+	  ,fraude_riesgos = case when A.situac = '3' and A.motblq in ('04','05','FRA','SEG') and A.observ not like ('%CAS%') then 1 else 0 end
+	  ,fraude_cumplimiento = case when A.situac = '3' and A.motblq in ('01','03','07','14','10','11','13') and A.observ not like ('%CAS%') then 1 else 0 end
+	  ,A.nombco
+	  ,A.tercer
+	  ,A.tipcta
+	  ,nrocta = REPLACE(A.nrocta,' ','')
+	  ,mailcom  = REPLACE(REPLACE(replace(A.mailcom,'"',''),' ',''),',','.')
+	  ,reprleg = REPLACE(A.reprleg,',',';')
+	  ,mailrleg = REPLACE(REPLACE(replace(A.mailrleg,'"',''),' ',''),',','.')
+	  ,mailggen = REPLACE(REPLACE(replace(A.mailggen,'"',''),' ',''),',','.')
+	  ,A.digman
+	  ,A.[Dig Manual]
+	  ,DNI = REPLACE(A.DNI,' ','')
+	  ,[Tip Com] = CASE WHEN A.codigo = '40597255' then 'COMERCIO ELECTRONICO' else A.[Tip Com] END
+	  ,Virtual = case when A.[Tip Com] in ('BOTON DE PAGO APP','BOTON DE PAGO WEB','CARGO RECURRENTE',
+									       'COMERCIO ELECTRONICO','IZIPAY APP','IZIPAY ECOMMERCE','LINK DE PAGO','MOTO',
+									       'ONLINE PAGINA WEB','ONLINE PASARELA','PCNET') then 'Virtual'
+					  when A.[Tip Com] like ('%IZI ANDROID%') then 'Fisico'
+					  when A.[Tip Com] like 'CAJERO CORRESPONSAL' then 'Fisico'
+					  when A.[Tip Com] like '%SMART T2020%' then 'Fisico'
+					  when A.[Tip Com] like '%IZIPRINT%' then 'Fisico'
+					  when A.[Tip Com] like '%IZISMART%' then 'Fisico'
+					  when A.[Tip Com] like '%FISICO%' then 'Fisico'
+					  when A.[Tip Com] like '%MPOS%' then 'Fisico'
+					  when A.[Tip Com] like '%POS%' then 'Fisico'
+					  when A.[Tip Com] like 'PRUEBA' then 'Fisico'
+					  when A.[Tip Com] like '%V240M%' then 'Fisico'
+					  when A.[Tip Com] like '%PAX D200%' then 'Fisico'
+					  when A.[Tip Com] like 'MPOS%' then 'Fisico'
+					  else 'NA' end
+	  ,respcta_nomb = REPLACE(A.respcta_nomb,',',';')
+	  ,A.Dealer
+	  ,Dealer_gen = case when A.Dealer like '%Wunderman%' then 'Web'
+						 when A.Dealer like '%BBVA%' or A.Dealer = 'SCOTIABANK' or A.Dealer = 'FERIA' then 'Otros'
+						 when A.Dealer = '' or A.Dealer = 'SIN GRUPO' then 'NA'
+						 else 'Dealer' end
+	  ,A.Dealer_Eje
+	  ,A.[Faci Serv]
+	  ,A.[Faci Pagos]
+	  ,cont_fac_elec = REPLACE(A.cont_fac_elec,',',';')
+	  ,cont8_fac_elec = REPLACE(A.cont8_fac_elec,',',';')
+	  ,mail_fact_elec = REPLACE(A.mail_fact_elec,',','.')
+	  ,A.Pay_Faci_ID
+	  ,A.Tip_Doc_T
+	  ,A.Nro_Doc_T
+	  ,Titular_T = REPLACE(A.Titular_T,',',';')
+	  ,A.Tipo_Faci
+	  ,Pag_web  = REPLACE(REPLACE(A.Pag_web,'"',''),',','.')
+	  ,A.Tel_ofi
+	  ,A.Fax_ofi
+	  ,[Email Opera] = REPLACE(REPLACE(REPLACE(A.[Email Opera],'"',''),' ',''),',','.')
+	  ,A.[Email Rep Proc]
+	  ,CARTERA_FM = b.CARTERA_FM
+	  ,nombre_producto = case when a.CODIGO = '4059722' THEN 'Facilitador Virtual'
+							when a.[Tip Com] = 'CAJERO CORRESPONSAL' and a.codigo <> '4059722' then a.[Tip Com] 
+							else NULL end
+	  ,COMPANIA = NULL
+	  ,DIVISION_PRODUCTO = 'Por Definir'--B.DIVISION_PRODUCTO
+	  ,TIPO_PRODUCTO= case when a.CODIGO = '4059722' THEN 'Virtual'
+							when a.[Tip Com] = 'CAJERO CORRESPONSAL' and a.codigo <> '4059722' then a.[Tip Com] 
+							else NULL end
+	  ,PRODUCTO= case when a.[Tip Com] = 'CAJERO CORRESPONSAL' then a.[Tip Com] else NULL end
+	  ,Direcc_Cont_8 = NULL
+	  ,DocIde_Cont_8 = NULL
+	  ,ApePat_Cont_8 = NULL
+	  ,Nombre_Cont_8 = NULL
+	  ,ARISALE = case when A.[FLG_ARISALE] LIKE 'ARIS%' then 1--when REPLACE(A.contra,',',';') = 'tunki' then 1 
+						--when a.Dealer_Eje = 'AFILIADOR TUNKI' then 1
+					else 0 end
+	  --,Direcc_Cont_8 = REPLACE(C.Direcc_Cont_8,',',';')
+	  --,DocIde_Cont_8 = REPLACE(C.DocIde_Cont_8,' ','')
+	  --,ApePat_Cont_8 = REPLACE(C.ApePat_Cont_8,',',';')
+	  --,Nombre_Cont_8 = REPLACE(C.Nombre_Cont_8,',',';')
+from SIN_DUPLICADOS A--PFYCC_GI_CARGA_MCESTAB A -----CARGA MCESTAB SIN DUPLICADOS
+	--left join [RT_GD_CARTERA_PLANEAMIENTO] b on A.codigo = B.CODIGO
+	--left join [BDPLANEAMIENTO].[dbo].[TE_PARQUE_202410] d with(nolock) on A.codigo = d.CODIGO--cambiar cada mes
+	--left join PFYCC_GI_TRANS_MCESTAB_FP C on A.codigo = C.codigo
+	LEFT JOIN [RT_GD_CARGA_TE_PARQUE_aZURE] E ON A.CODIGO = E.CODIGO
+	LEFT JOIN (SELECT s.codigo, 
+					  s.segmento, 
+					  s.periodo
+			   FROM [DWH].[segmentacion] s
+			   INNER JOIN (SELECT codigo, MAX(periodo) AS max_periodo
+						   FROM [DWH].[segmentacion]
+						   GROUP BY codigo
+						   ) SS ON SS.codigo = s.codigo AND SS.max_periodo = s.periodo
+			   ) S ON S.codigo = A.codigo
+
+	LEFT OUTER JOIN (SELECT DISTINCT [PFPFID] = RTRIM(F.[PFPFID]), 
+								[PFRUCE] = RTRIM(F.[PFRUCE]), 
+								[PFPFNC] = RTRIM([PFPFNC]), 
+								[PFMONE] = CASE
+											   WHEN RTRIM(F.[PFMONE]) = '604' THEN 'SOLES'
+											   ELSE 'DOLARES'
+										   END, 
+								PFFING = MAX(RTRIM(F.[PFFING])),
+								[Tipo_Facilitador]
+				FROM [RAW].[Mcfv1001] F
+				LEFT OUTER JOIN [DWH].[Dim_Facilitador] DF ON DF.[MEPFID] = F.[PFPFID]
+				INNER JOIN(SELECT DISTINCT [PFPFID], [PFRUCE], [PFMONE], [PFFING] = MAX(PFFING)
+						   FROM [RAW].[Mcfv1001]
+						   GROUP BY PFPFID, PFRUCE,PFMONE
+						   ) FM ON F.[PFPFID] = FM.[PFPFID] AND F.[PFMONE] = FM.[PFMONE] AND F.[PFFING] = FM.[PFFING]
+				GROUP BY RTRIM(F.[PFPFID]), 
+						 RTRIM(F.[PFRUCE]), 
+						 RTRIM([PFPFNC]), 
+						 CASE
+							WHEN RTRIM(F.[PFMONE]) = '604' THEN 'SOLES'
+							ELSE 'DOLARES'
+						  END,
+						  [Tipo_Facilitador]
+				  ) F ON (F.[PFRUCE] = A.[Nroruc]) AND (F.[PFMONE] = A.[MONEDA])
+where   a.codigo <> '999999999'
+)
+
+insert into dbo.PFYCC_GI_TRANS_MCESTAB
+select distinct A.codigo
+	  ,A.situac
+	  ,tip_ruc
+	  ,nroruc
+	  ,cta_esp
+	  ,segmento
+	  ,facili_pago
+	  ,nomcom
+	  ,razsoc
+	  ,PGS
+	  ,Fec_afi_PGS
+	  ,Izipay_Ya
+	  ,moneda
+	  ,mcc
+	  ,giro
+	  ,HR_VISA_MC
+	  ,HR_SBS
+	  ,cod_amex
+	  ,s_amex
+	  ,s_diners
+	  ,s_visa
+	  ,c_visa
+	  ,c_mastercard
+	  ,c_amex
+	  ,c_diners
+	  ,contra
+	  ,compañia
+	  ,dire
+	  ,dpto
+	  ,prov
+	  ,dist
+	  ,cpos
+	  ,ubigeo
+	  ,telefo
+	  ,fax
+	  ,clasef
+	  ,fecape
+	  --,fecmod = case when cast(A.fecmod as varchar) = '1900-01-01' then ''
+			--		 else cast(A.fecmod as varchar) end
+	  --,fecblq = case when cast(A.fecblq as varchar) = '1900-01-01' then ''
+			--		 else cast(A.fecblq as varchar) end
+	  ,fecmod
+	  ,fecblq
+	  ,motblq
+	  ,observ
+	  ,blq_frau
+	  ,fraude_riesgos
+	  ,fraude_cumplimiento
+	  ,nombco
+	  ,tercer
+	  ,tipcta
+	  ,nrocta
+	  ,mailcom
+	  ,reprleg
+	  ,mailrleg
+	  ,mailggen
+	  ,digman
+	  ,[Dig Manual]
+	  ,DNI
+	  ,[Tip Com]
+	  ,Virtual
+	  ,respcta_nomb
+	  ,Dealer
+	  ,Dealer_gen
+	  ,Dealer_Eje
+	  ,[Faci Serv]
+	  ,[Faci Pagos]
+	  ,cont_fac_elec
+	  ,cont8_fac_elec
+	  ,mail_fact_elec
+	  ,Pay_Faci_ID
+	  ,Tip_Doc_T
+	  ,Nro_Doc_T
+	  ,Titular_T
+	  ,Tipo_Faci
+	  ,Pag_web
+	  ,Tel_ofi
+	  ,Fax_ofi
+	  ,[Email Opera]
+	  ,[Email Rep Proc]
+	  ,CARTERA_FM
+	  ,NOMBRE_PRODUCTO
+	  ,COMPANIA
+	  ,DIVISION_PRODUCTO
+	  ,TIPO_PRODUCTO
+	  ,PRODUCTO
+	  ,Direcc_Cont_8
+	  ,DocIde_Cont_8
+	  ,ApePat_Cont_8
+	  ,Nombre_Cont_8
+	  ,ARISALE
+--into PFYCC_GI_TRANS_MCESTAB
+from LIMPIEZA_MCESTAB A
+
+--exec SP_RT_GD_CARGA_DIM_Comercios
+--CREATE CLUSTERED INDEX IDX_codigo
+--ON PFYCC_GI_TRANS_MCESTAB (codigo)
+
+--EXEC [dbo].[SP_PFYCC_GI_TRANS_MCESTAB]

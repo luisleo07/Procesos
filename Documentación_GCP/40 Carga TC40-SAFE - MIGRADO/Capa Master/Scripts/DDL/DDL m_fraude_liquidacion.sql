@@ -1,0 +1,36 @@
+CREATE OR REPLACE TABLE prd-izipay-data-storage-pv.master_risk.m_fraude_liquidacion (
+process_date DATE NOT NULL OPTIONS(description='Fecha de foto/datos configurada en el ETL para la extracción de datos, corresponde a la foto del cierre del día anterior'),
+tarjeta_enmascarada STRING  OPTIONS(description='Representación parcial del número de tarjeta ocultando dígitos sensibles. Contiene los 6 primeros digitos, 6 asteriscos y 4 últimos'),
+cod_autorizacion STRING  OPTIONS(description='Código de autorización de la transacción.'),
+cod_comercio STRING  OPTIONS(description='Nombre del establecimiento donde se realizó la transacción.'),
+cod_medio_trx STRING  OPTIONS(description='Número de voucher o comprobante de la transacción.'),
+fecha_trx DATE  OPTIONS(description='Fecha en la que se realizó la transacción.'),
+cod_moneda STRING  OPTIONS(description='Código de la moneda de la transacción'),
+cod_tipo_trx STRING  OPTIONS(description='Tipo de transacción '),
+nom_comercio STRING  OPTIONS(description='Nombre del comercio donde se realizó la transacción.'),
+fecha_proceso DATE  OPTIONS(description='Fecha en la que la transacción fue procesada.'),
+arer STRING  OPTIONS(description='Código interno relacionado con el procesamiento de la transacción.'),
+arn STRING  OPTIONS(description='Número de referencia asociado a transacciones en comercio electrónico o disputas'),
+nro_doc_impreso_terminal INT64  OPTIONS(description='Número de documento que ha impreso el terminal (correlativo 1,2,3,etc)'),
+cod_autentificacion_ecommerce STRING  OPTIONS(description='Indica si la transacción fue realizada en comercio electrónico '),
+cod_terminal STRING  OPTIONS(description='Código del terminal donde se efectuó la transacción.'),
+metodo_ingreso STRING  OPTIONS(description='Método de ingreso de la transacción '),
+referencia STRING  OPTIONS(description='Referencia adicional de la transacción.'),
+mto_venta FLOAT64  OPTIONS(description='Monto de la transacción en la moneda original del comercio'),
+usuario_aprobador STRING  OPTIONS(description='Usuario o entidad que aprobó la transacción.'),
+fecha_autorizacion DATE  OPTIONS(description='Fecha en la que se registró la transacción en el sistema.'),
+hora_autorizacion STRING  OPTIONS(description='Hora en la que ocurrió la transacción.'),
+bin STRING  OPTIONS(description='Primeros 9  dígitos de la tarjeta'),
+fecha_alerta_fraude DATE  OPTIONS(description='Fecha en la que se alertó el fraude'),
+mto_venta_solarizado FLOAT64  OPTIONS(description='Monto de la transacción convertido a soles.'),
+cod_tipo_fraude STRING  OPTIONS(description='Código del tipo de fraude detectado'),
+cod_modo_entrada_pos STRING  OPTIONS(description='Codigo de la forma de ingreso de datos de la tarjeta'),
+desc_modo_entrada_pos STRING  OPTIONS(description='Descripción de la forma en que se ingresaron los datos de la tarjeta'),
+record_source STRING NOT NULL OPTIONS(description='Dato de Auditoría: Descripción del aplicativo origen de los datos.'),
+load_date DATETIME NOT NULL OPTIONS(description='Fecha y hora de inserción del registro en el modelo'),
+creation_user STRING NOT NULL OPTIONS(description='Usuario que crea el registro en la BD'),
+PRIMARY KEY (process_date, arn) NOT ENFORCED
+)
+PARTITION BY process_date
+CLUSTER BY cod_comercio, fecha_trx, bin, fecha_alerta_fraude
+OPTIONS (description='Tabla que muestra información de transaccions procesadas que entraron al proceso de liquidación y que fueron alertadas como potencial fraude por las marcas (TC40 de Visa y Safe de MC)');
