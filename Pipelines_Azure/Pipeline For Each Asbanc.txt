@@ -1,0 +1,165 @@
+{
+    "name": "pipeline20",
+    "properties": {
+        "activities": [
+            {
+                "name": "ForEach1",
+                "type": "ForEach",
+                "dependsOn": [
+                    {
+                        "activity": "Fitro Asbanc",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "items": {
+                        "value": "@activity('Fitro Asbanc').output.value",
+                        "type": "Expression"
+                    },
+                    "isSequential": false,
+                    "activities": [
+                        {
+                            "name": "Sftp to Adls",
+                            "type": "Copy",
+                            "dependsOn": [],
+                            "policy": {
+                                "timeout": "0.12:00:00",
+                                "retry": 0,
+                                "retryIntervalInSeconds": 30,
+                                "secureOutput": false,
+                                "secureInput": false
+                            },
+                            "userProperties": [],
+                            "typeProperties": {
+                                "source": {
+                                    "type": "ExcelSource",
+                                    "storeSettings": {
+                                        "type": "SftpReadSettings",
+                                        "recursive": false,
+                                        "enablePartitionDiscovery": false,
+                                        "disableChunking": false
+                                    }
+                                },
+                                "sink": {
+                                    "type": "ParquetSink",
+                                    "storeSettings": {
+                                        "type": "AzureBlobFSWriteSettings"
+                                    },
+                                    "formatSettings": {
+                                        "type": "ParquetWriteSettings"
+                                    }
+                                },
+                                "enableStaging": false,
+                                "translator": {
+                                    "type": "TabularTranslator",
+                                    "typeConversion": true,
+                                    "typeConversionSettings": {
+                                        "allowDataTruncation": true,
+                                        "treatBooleanAsNumber": false
+                                    }
+                                }
+                            },
+                            "inputs": [
+                                {
+                                    "referenceName": "ds_copy_excelauto_sftp_prd01",
+                                    "type": "DatasetReference",
+                                    "parameters": {
+                                        "vRuta": {
+                                            "value": "@concat('Prd\\Ingesta\\DataEntry\\Operaciones\\Asbanc\\Historia')",
+                                            "type": "Expression"
+                                        },
+                                        "vFile": {
+                                            "value": "@item().name",
+                                            "type": "Expression"
+                                        },
+                                        "vHoja": "Data",
+                                        "vInicio": "A6:AU10000"
+                                    }
+                                }
+                            ],
+                            "outputs": [
+                                {
+                                    "referenceName": "ds_adls_generico_parquet",
+                                    "type": "DatasetReference",
+                                    "parameters": {
+                                        "path": {
+                                            "value": "@concat('DataEntry/Operaciones/Transaccional/Asbanc')",
+                                            "type": "Expression"
+                                        },
+                                        "file": {
+                                            "value": "@concat(replace(item().name, '.xlsx', ''), '.parquet')",
+                                            "type": "Expression"
+                                        },
+                                        "container": "adls-ingesta"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "Get Metadata1",
+                "type": "GetMetadata",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "dataset": {
+                        "referenceName": "ds_solo_generico_excel_prd",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "vRuta": {
+                                "value": "@concat('Prd\\Ingesta\\DataEntry\\Operaciones\\Asbanc\\Historia')",
+                                "type": "Expression"
+                            },
+                            "vHoja": "Data"
+                        }
+                    },
+                    "fieldList": [
+                        "childItems"
+                    ],
+                    "storeSettings": {
+                        "type": "SftpReadSettings",
+                        "recursive": false,
+                        "enablePartitionDiscovery": false,
+                        "disableChunking": false
+                    }
+                }
+            },
+            {
+                "name": "Fitro Asbanc",
+                "type": "Filter",
+                "dependsOn": [
+                    {
+                        "activity": "Get Metadata1",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "items": {
+                        "value": "@activity('Get Metadata1').output.childItems",
+                        "type": "Expression"
+                    },
+                    "condition": {
+                        "value": "@and(\n    endsWith(item().name, '.xlsx'),\n    not(startsWith(item().name, '~$'))\n)",
+                        "type": "Expression"
+                    }
+                }
+            }
+        ],
+        "annotations": []
+    }
+}

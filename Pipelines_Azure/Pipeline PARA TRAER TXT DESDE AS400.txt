@@ -1,0 +1,76 @@
+{
+    "name": "Exportar_plano_CSV_v04",
+    "properties": {
+        "activities": [
+            {
+                "name": "Exportar_plano_csv",
+                "type": "Copy",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "7.00:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "Db2Source",
+                        "query": {
+                            "value": "@concat('\nSELECT \n    ''MCFS044_A'' AS nombre_tabla,\n    pefabo,\n    COUNT(*) AS cantidad\nFROM PEDROG.mcfs044_a\nGROUP BY pefabo\n\nUNION ALL\n\nSELECT \n    ''MCFS044_E'' AS nombre_tabla,\n    pefabo,\n    COUNT(*) AS cantidad\nFROM PEDROG.mcfs044_e\nGROUP BY pefabo\n\nUNION ALL\n\nSELECT \n    ''MCFS044_F'' AS nombre_tabla,\n    pefabo,\n    COUNT(*) AS cantidad\nFROM PEDROG.mcfs044_f\nGROUP BY pefabo\n\nUNION ALL\n\nSELECT \n    ''MCFS044_M'' AS nombre_tabla,\n    pefabo,\n    COUNT(*) AS cantidad\nFROM PEDROG.mcfs044_m\nGROUP BY pefabo\n\nORDER BY nombre_tabla, pefabo\nWITH UR')",
+                            "type": "Expression"
+                        }
+                    },
+                    "sink": {
+                        "type": "DelimitedTextSink",
+                        "storeSettings": {
+                            "type": "AzureBlobFSWriteSettings"
+                        },
+                        "formatSettings": {
+                            "type": "DelimitedTextWriteSettings",
+                            "quoteAllText": true,
+                            "fileExtension": ".txt"
+                        }
+                    },
+                    "enableStaging": false,
+                    "translator": {
+                        "type": "TabularTranslator",
+                        "typeConversion": true,
+                        "typeConversionSettings": {
+                            "allowDataTruncation": true,
+                            "treatBooleanAsNumber": false
+                        }
+                    }
+                },
+                "inputs": [
+                    {
+                        "referenceName": "db2_as400_reproceso_inca",
+                        "type": "DatasetReference"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "referenceName": "adls_copy_table_txt1",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "Ruta": "mc2253/ouput",
+                            "Archivo": "dataas400.txt"
+                        }
+                    }
+                ]
+            }
+        ],
+        "variables": {
+            "vArchivo": {
+                "type": "String"
+            }
+        },
+        "folder": {
+            "name": "MC1464 - Pedro Guerrero"
+        },
+        "annotations": [],
+        "lastPublishTime": "2025-08-20T03:24:09Z"
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,165 @@
+{
+    "name": "pipeline20",
+    "properties": {
+        "activities": [
+            {
+                "name": "Convert CSV to Parquet",
+                "type": "Copy",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "DelimitedTextSource",
+                        "storeSettings": {
+                            "type": "SftpReadSettings",
+                            "recursive": true,
+                            "enablePartitionDiscovery": false,
+                            "disableChunking": false
+                        },
+                        "formatSettings": {
+                            "type": "DelimitedTextReadSettings"
+                        }
+                    },
+                    "sink": {
+                        "type": "ParquetSink",
+                        "storeSettings": {
+                            "type": "AzureBlobFSWriteSettings"
+                        },
+                        "formatSettings": {
+                            "type": "ParquetWriteSettings"
+                        }
+                    },
+                    "enableStaging": false,
+                    "translator": {
+                        "type": "TabularTranslator",
+                        "typeConversion": true,
+                        "typeConversionSettings": {
+                            "allowDataTruncation": true,
+                            "treatBooleanAsNumber": false
+                        }
+                    }
+                },
+                "inputs": [
+                    {
+                        "referenceName": "ds_sftp_generico_con_cabecera_csv_prd",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "path": {
+                                "value": "@concat('Prd\\Ingesta\\DataEntry\\Operaciones\\MC')",
+                                "type": "Expression"
+                            },
+                            "file": {
+                                "value": "@concat('vrol1100', '.csv')",
+                                "type": "Expression"
+                            },
+                            "delimitador": ";",
+                            "comillas": "\""
+                        }
+                    }
+                ],
+                "outputs": [
+                    {
+                        "referenceName": "ds_adls_ingesta_parquet",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "Ruta": {
+                                "value": "@concat('DataEntry/Operaciones/Transaccional/MC')",
+                                "type": "Expression"
+                            },
+                            "Nombre": {
+                                "value": "@concat('mc_reproceso','.parquet')",
+                                "type": "Expression"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "Convert Excel to Parquet",
+                "type": "Copy",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "ExcelSource",
+                        "storeSettings": {
+                            "type": "SftpReadSettings",
+                            "recursive": true,
+                            "enablePartitionDiscovery": false,
+                            "disableChunking": false
+                        }
+                    },
+                    "sink": {
+                        "type": "ParquetSink",
+                        "storeSettings": {
+                            "type": "AzureBlobFSWriteSettings"
+                        },
+                        "formatSettings": {
+                            "type": "ParquetWriteSettings"
+                        }
+                    },
+                    "enableStaging": false,
+                    "translator": {
+                        "type": "TabularTranslator",
+                        "typeConversion": true,
+                        "typeConversionSettings": {
+                            "allowDataTruncation": true,
+                            "treatBooleanAsNumber": false
+                        }
+                    }
+                },
+                "inputs": [
+                    {
+                        "referenceName": "ds_copy_excel_sftp_prd01",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "vRuta": {
+                                "value": "@concat('temp/Coordenadas')",
+                                "type": "Expression"
+                            },
+                            "vFile": {
+                                "value": "@concat('rucs_coordenadas','.xlsx')",
+                                "type": "Expression"
+                            },
+                            "vHoja": "Hoja1"
+                        }
+                    }
+                ],
+                "outputs": [
+                    {
+                        "referenceName": "ds_adls_generico_parquet",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "path": {
+                                "value": "@concat('temp/Coordenadas')",
+                                "type": "Expression"
+                            },
+                            "file": {
+                                "value": "@concat('rucs_coordenadas', '.parquet')",
+                                "type": "Expression"
+                            },
+                            "container": "tempdata"
+                        }
+                    }
+                ]
+            }
+        ],
+        "annotations": []
+    }
+}
