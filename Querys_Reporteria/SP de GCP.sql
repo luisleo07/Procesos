@@ -2874,5 +2874,1291 @@ BEGIN
   END IF;
 END;
 
+CREATE OR REPLACE PROCEDURE `prd-izipay-data-operation.master_stage_product.prc_load_table_m_terminal`(var_project_operation STRING, var_project_storage STRING, var_project_sensitive STRING)
+BEGIN
+
+  declare query STRING;
+  declare var_fecha DATE;
+  declare var_process_date DATE;
+  declare var_process_date_ini DATE;
+  declare var_process_date_fin DATE;
+
+  /*
+  declare var_project_operation STRING;
+  declare var_project_storage STRING;
+  declare var_project_sensitive STRING;
+
+  set var_project_operation = 'prd-izipay-data-operation';
+  set var_project_storage = 'prd-izipay-data-storage-pv';
+  set var_project_sensitive = 'prd-izipay-data-sensitive';
+  */
+
+  declare var_dataset_secure_secrets STRING;
+  declare var_table_config_protected_data STRING;
+
+  declare var_dataset_master_party STRING;
+  declare var_dataset_raw_as400 STRING;
+  declare var_dataset_master_product STRING;
+  declare var_dataset_master_stage_product STRING;
+  declare var_dataset_raw_dataentry_operaciones STRING;
+
+
+  declare var_dataset_raw_mccenter_adq STRING;
+  declare var_dataset_raw_mccenter_caco STRING;
+
+  declare var_table_akfmitem STRING;
+  declare var_table_mcfm019i STRING;
+  declare var_table_tmmerchant STRING;
+  declare var_table_tmterminal STRING;
+  declare var_table_tmchipsgprs STRING;
+  declare var_table_taterminalapplication STRING;
+  declare var_table_tmdownloadprofile STRING;
+  declare var_table_tafloorlimit STRING;
+  declare var_table_taterminalappltransaction STRING;
+  declare var_table_tamerchantprofileapplication STRING;
+  declare var_table_tmversion STRING;
+  declare var_table_txlistfield STRING;
+
+  declare var_table_terminal_a STRING;
+  declare var_table_terminal_cc STRING;
+  declare var_table_pre_m_terminal STRING;
+  declare var_table_dataterminales_as STRING;
+
+  declare var_table_marguesi_terminal_desuso STRING;
+  declare var_table_modelo_terminal_desuso STRING;
+  declare var_table_modelo_terminal_pinpad STRING;
+  declare var_table_modelos_old_terminal_desuso STRING;
+
+  declare var_table_m_terminal STRING;
+  declare var_table_m_comercio STRING;
+  
+  declare var_table_mcfv030e STRING;
+  declare var_table_mcfv1001 STRING;
+
+  set var_fecha = current_date('America/Lima')-1;
+  set var_process_date = current_date('America/Lima')-1;
+  set var_process_date_ini = date_trunc(var_process_date, month);
+  set var_process_date_fin = last_day(var_process_date);
+
+  set var_dataset_secure_secrets = 'secure_secrets';
+  set var_table_config_protected_data = 'config_protected_data';
+ 
+  set var_dataset_master_party = 'master_party';
+  set var_dataset_raw_as400 = 'raw_as400';
+  set var_dataset_master_product = 'master_product';
+  set var_dataset_master_stage_product = 'master_stage_product';
+  set var_dataset_raw_dataentry_operaciones = 'raw_dataentry_operaciones';
+  
+  set var_table_m_terminal = 'm_terminal';
+  set var_table_m_comercio = 'm_comercio';
+
+  set var_table_dataterminales_as = 'dataterminales_as';
+  set var_table_terminal_a = 'terminal_adq';
+  set var_table_terminal_cc = 'terminal_caco';
+  set var_table_pre_m_terminal = 'pre_m_terminal';
+
+  set var_table_mcfv030e = 'mcfv030e';
+  set var_table_mcfv1001 = 'mcfv1001';
+
+  set var_table_marguesi_terminal_desuso = 'marguesi_terminal_desuso';
+  set var_table_modelo_terminal_desuso = 'modelo_terminal_desuso';
+  set var_table_modelo_terminal_pinpad = 'modelo_terminal_pinpad';
+  set var_table_modelos_old_terminal_desuso = 'modelos_old_terminal_desuso';
+
+  set var_dataset_raw_mccenter_adq = 'raw_mccenter_adq';
+  set var_dataset_raw_mccenter_caco = 'raw_mccenter_caco';
+  set var_table_akfmitem = 'akfmitem';
+  set var_table_mcfm019i = 'mcfm019i';
+  set var_table_tmmerchant = 'tmmerchant';
+  set var_table_tmterminal = 'tmterminal';
+  set var_table_tmchipsgprs = 'tmchipsgprs';
+  set var_table_taterminalapplication = 'taterminalapplication';
+  set var_table_tmdownloadprofile = 'tmdownloadprofile';
+  set var_table_tafloorlimit = 'tafloorlimit';
+  set var_table_taterminalappltransaction = 'taterminalappltransaction';
+  set var_table_tamerchantprofileapplication = 'tamerchantprofileapplication';
+  set var_table_tmversion = 'tmversion';
+  set var_table_txlistfield = 'txlistfield';
+
+  
+
+  SET query = """
+    truncate table `"""||var_project_storage||"""."""||var_dataset_master_product||"""."""||var_table_m_terminal||"""`  
+  """;
+  EXECUTE IMMEDIATE(query);
+
+  /*
+   TABLAS TEMPORALES QUE SE ELIMINAN AL TERMINAR EL PROCESO
+  */
+
+  SET query = """
+    create or replace table """||var_project_storage||"""."""||var_dataset_master_stage_product||"""."""||var_table_dataterminales_as||""" as
+    select
+      right(trim(a.usefj),7) as codcomercio,
+      trim(a.csiac) as estado,
+      trim(a.cacfj) as marguesi,
+      trim(a.tmrfj) as marca,
+      trim(a.tmofj) as modelo,
+      upper(trim(a.nsefj)) as serie,
+      date(cast(a.acofj as int64), cast(a.mcofj as int64), cast(a.dcofj as int64)) as feccompra,
+      trim(c.mencom) as nomcomercial,
+      c.medire as direccion,
+      trim(c.meprov) as prov,
+      trim(c.medepa) as dpto,
+      trim(c.medist) as dist,
+    from `"""||var_project_storage||"""."""||var_dataset_raw_as400||"""."""||var_table_akfmitem||"""` a
+    left join `"""||var_project_storage||"""."""||var_dataset_raw_as400||"""."""||var_table_mcfm019i||"""` c on right(trim(a.usefj),7) = trim(c.mecest)
+    left join `"""||var_project_storage||"""."""||var_dataset_raw_dataentry_operaciones||"""."""||var_table_modelo_terminal_desuso||"""` d on (trim(a.tmofj) = d.modelo_desuso)
+    left join `"""||var_project_storage||"""."""||var_dataset_raw_dataentry_operaciones||"""."""||var_table_marguesi_terminal_desuso||"""` e on (trim(a.cacfj) = e.marguesi_desuso)
+    where 
+      trim(a.tmrfj) in ('DS1READ','DSPREAD','INGENICO','PAX','SUNMI','VERIFON','VERIFONE','SUMNI','WISEPAD')
+      and d.modelo_desuso is null
+      and e.marguesi_desuso is null /*PARCHE SERIE DUPLICADA EN EL ACTIVO FIJO / V810 / SERIES MAL ASIGNADAS */
+      and ((trim(a.tmrfj) in ('VERIFON','VERIFONE')	and left(trim(a.nsefj),1)<>'F')
+        or (left(trim(a.tmofj),4) ='MOVE' and left(trim(a.nsefj),1) not in ('V','F'))
+        or (trim(a.tmrfj) not in ('VERIFON','VERIFONE') and left(trim(a.tmofj),4) <>'MOVE' and  a.csiac<>'B')
+        or trim(a.tmofj) in ('ICT220-EM','IWL250','ICT220 EMC','IWL250 3G','ICT220 EM','IWL220 3G','ICT220GEMC'))
+      and right(trim(a.usefj),7) <> '7010427'
+      and a.tmofj <> ''
+  """;
+  EXECUTE IMMEDIATE(query);
+
+  SET query = """    
+    create or replace table """||var_project_storage||"""."""||var_dataset_master_stage_product||"""."""||var_table_terminal_a||""" as
+    with ultimaversionmain as 
+    (
+      select 
+        ctafilesversion,
+        ctamerchantid,
+        ctaterminalnum,
+        ctaterminalsn,
+        row_number() over (	partition by ctamerchantid, ctaterminalnum, ctaterminalsn order by ctafilesversion desc) as seq
+      from """||var_project_storage||"""."""||var_dataset_raw_mccenter_adq||"""."""||var_table_taterminalapplication||"""
+      where ctaapplicationid = 'MAIN'
+    ), serie_corta as
+    (
+      select
+        right(replace(replace(trim(serie),' ',''),'-',''),8) as serie_corta,
+        max(trim(serie)) as serie
+      from """||var_project_storage||"""."""||var_dataset_master_stage_product||"""."""||var_table_dataterminales_as||"""
+      where marca in ('INGENICO','PAX','SUNMI','VERIFON','VERIFONE','SUMNI')
+      group by all
+      having count(1) = 1
+    ), serie_corta_r3 as
+    (
+      select
+        right(replace(replace(trim(serie),' ',''),'-',''),9) as serie_corta,
+        max(trim(serie)) as serie
+      from """||var_project_storage||"""."""||var_dataset_master_stage_product||"""."""||var_table_dataterminales_as||"""
+      where marca in ('DS1READ','DSPREAD','WISEPAD')
+      group by all
+      having count(1) = 1
+    ), temp_mcfm019i as
+    (
+      select 
+        mecest,
+        case when trim(memcom) in ('0','1') then null else trim(memcom) end cod_madre,
+        mepfid,
+        party_id_izi 
+        from """||var_project_storage||"""."""||var_dataset_raw_as400||"""."""||var_table_mcfm019i||"""
+    ), temp_mcfv1001 as 
+    (	
+      select 
+        pfpfid,
+        pfpfnc
+      from """||var_project_storage||"""."""||var_dataset_raw_as400||"""."""||var_table_mcfv1001||""" 
+      qualify row_number() over(partition by pfpfid order by pffing desc,pfhing desc) = 1
+    )
+
+    select 
+      a.cmrmerchantid as comercio,
+      case when trim(mcfv1001.pfpfnc) = 'IZI*' then 'ADQ-IZIPAY' else 'ADQ-PMP'	end adq_c_cor,
+      a.cmrmcc as rubro,
+      ifnull(mcfm019i.party_id_izi,a.party_id_izi) as party_id_izi,
+      i.dlfdescription as departamento,
+      j.dlfdescription as provincia,
+      k.dlfdescription as distrito,
+      b.ctrmultmerchant as multicomercio,
+      case when b.ctrmultmerchant in ('0','2') then true	else false end flag_multicomercio,
+      AEAD.DECRYPT_STRING(cte.key, a.dmrphone, cte.constant) as telefono_comercio,
+      AEAD.DECRYPT_STRING(cfu.key, a.dmrcontactname, cfu.constant) as contacto_comercio,
+      a.cmrprofileid as perfil_comercio,
+      c.ddpprofilename as perfil_descarga,
+      b.ctrterminalnum as terminal, 
+      b.dtrterminalsn as serie,
+      b.ntrlongitudtrama as medio_mcc,
+      b.dtrdescription as descripcion_terminal,
+      b.ftrlastechodate as fecha_ultimo_eco,
+      b.ftrlasttrxfindate as fecha_ultima_transaccion_financiera, 
+      b.ftrlasttrxadmdate as fecha_ultima_transaccion_administrativa,
+      trim(b.ctrmodel) as modelo_mcc, 
+      nullif(trim(b.ntrswversion),'') as version_swb,
+      b.dtrosversion as os_version,
+      b.ntrchipnumber as chip,
+      AEAD.DECRYPT_STRING(cte.key, d.telefono, cte.constant) as telefono_chip,
+      case
+        when left(trim(b.ntrchipnumber),6) = '893407' then 'MOVISTAR-SM'
+        when left(trim(b.ntrchipnumber),6) = '895106' then 'MOVISTAR'
+        when left(trim(b.ntrchipnumber),6) = '895110' then 'CLARO'
+        when left(trim(b.ntrchipnumber),6) = '895117' then 'ENTEL'
+        when left(trim(b.ntrchipnumber),6) = '895115' then 'BITEL'
+        else upper(trim(d.operador)) end operador,
+      trim(l.dlfdescription) as estado_comercio,
+      trim(m.dlfdescription) as estado_logico_comercio, 
+      trim(n.dlfdescription) as estado_terminal,
+      trim(o.dlfdescription) as estado_logico_terminal,
+      e.ctaapplicationid as aplicacion,
+      b.ctramountpaid as facturacion,
+      b.dtre105sn,
+      e.ctafilesversion as version_flujo,
+      p.ctafilesversion as version_main,
+      case
+        when nullif(trim(b.dtrterminalcompletesn),'') <> '' and (upper(trim(desuso.medio)) <> 'MPOS' or upper(trim(desuso.medio)) is null) then right(upper(trim(replace(b.dtrterminalcompletesn,'-',''))),15)
+        when length(trim(b.dtrterminalcompletesn)) = 9 and trim(b.dtrterminalsn) = left(trim(b.dtrterminalcompletesn),8) then substr(trim(b.dtrterminalcompletesn),1,3) || '-' || substr(trim(b.dtrterminalcompletesn),4,3)|| '-' || substr(trim(b.dtrterminalcompletesn),7,3)
+        when length(trim(b.dtrterminalcompletesn)) > 9 and trim(b.dtrterminalsn) = right(trim(b.dtrterminalcompletesn),8) then trim(b.dtrterminalcompletesn)
+        when r.serie is not null then r.serie
+        when r2.serie is not null then r2.serie
+        when r3.serie is not null then r3.serie
+        end serie_completa,
+      if(f.cfltransactionid = '13', true, false) as pre_autorizacion_nivel_comercio,
+      if(g.ctattransactionid = '13', true, false) as pre_autorizacion_nivel_terminal,
+      case 
+        when h.cmacardwriter = '2' then true 
+        when h.cmacardwriter = '1' then false
+        else false end digitacion_manual_nivel_comercio,
+      case 
+        when e.ctamultimerchantwriter = '2' then true
+        when e.ctamultimerchantwriter = '1' then false
+        else false end digitacion_manual_nivel_terminal,
+      case 
+        when e.ctaonlinetip = '0' then 'ONLINE' 
+        when e.ctaonlinetip = '2' then 'AMBAS' 
+        when e.ctaonlinetip = '3' then 'OFFLINE' 
+        else 'NINGUNO' end propina,
+      e.ftaupdatedate as fecha_actualizacion_app,
+      e.htaupdatetime as hora_actualizacion_app,
+      b.ntrdownloadattempts as num_intentos,
+      b.ftrlastdownloaddate as fecha_ultima_actualizacion,
+      b.htrlastdownloadtime as hora_ultima_actualizacion,
+      if(e.ctaversionapl = q.dvrfile, true, false) as version_actualizado,
+      e.ctafilesversion,
+      q.cvrversionid,
+      e.ctaversionapl,
+      q.dvrfile,
+      r.marguesi,
+      r.feccompra,
+      r.modelo as modelo_as,
+      mcfm019i.cod_madre as cod_madre,
+      case
+        when trim(r.estado) = 'A' then 'ACTIVO'
+        when trim(r.estado) = 'B' then 'BAJA'
+        when trim(r.estado) = 'Q' then 'ALQUILER'
+        when trim(r.estado) = 'V' then 'VENTA'
+        end situacion_as400,
+      'MCCENTER ADQUIRENTE' as record_source
+    from """||var_project_storage||"""."""||var_dataset_raw_mccenter_adq||"""."""||var_table_tmmerchant||""" a 
+    inner join """||var_project_storage||"""."""||var_dataset_raw_mccenter_adq||"""."""||var_table_tmterminal||""" b on (a.cmrmerchantid = b.ctrmerchantid)
+    left join """||var_project_storage||"""."""||var_dataset_raw_mccenter_adq||"""."""||var_table_tmchipsgprs||""" d on (b.ntrchipnumber = d.simcard)
+    inner join """||var_project_storage||"""."""||var_dataset_raw_mccenter_adq||"""."""||var_table_taterminalapplication||""" e on (b.ctrterminalnum = e.ctaterminalnum and b.ctrmerchantid = e.ctamerchantid)
+    inner join """||var_project_storage||"""."""||var_dataset_raw_mccenter_adq||"""."""||var_table_tmdownloadprofile||""" c on (a.cmrdownloadprofile = c.cdpprofileid)
+    left join """||var_project_storage||"""."""||var_dataset_raw_mccenter_adq||"""."""||var_table_tafloorlimit||""" f on (a.cmrprofileid = f.cflmrprofileid and f.cflaplicacion = 'POS' and f.cfltransactionid = '13')
+    left join """||var_project_storage||"""."""||var_dataset_raw_mccenter_adq||"""."""||var_table_taterminalappltransaction||""" g on (b.ctrterminalnum = g.ctatterminalnum and b.ctrmerchantid = g.ctatmerchantid and g.ctattransactionid = '13')
+    left join """||var_project_storage||"""."""||var_dataset_raw_mccenter_adq||"""."""||var_table_tamerchantprofileapplication||""" h on (a.cmrprofileid = h.cmamerchantprofileid and e.ctaapplicationid = h.cmaapplicationid)
+    left join """||var_project_storage||"""."""||var_dataset_raw_mccenter_adq||"""."""||var_table_tmversion||""" q on (e.ctafilesversion = q.cvrversionid and e.ctaapplicationid = q.cvrapplicationid)
+    left join """||var_project_storage||"""."""||var_dataset_raw_mccenter_adq||"""."""||var_table_txlistfield||""" i on (i.dlffieldname = 'Provincia' and i.clfcode = a.cmrdepartcode)
+    left join """||var_project_storage||"""."""||var_dataset_raw_mccenter_adq||"""."""||var_table_txlistfield||""" j on (j.dlffieldname = 'Ciudad' and j.clfcode = a.cmrprovincecode)
+    left join """||var_project_storage||"""."""||var_dataset_raw_mccenter_adq||"""."""||var_table_txlistfield||""" k on (k.dlffieldname = 'Zona' and k.clfcode = a.cmrdistrictcode)
+    left join """||var_project_storage||"""."""||var_dataset_raw_mccenter_adq||"""."""||var_table_txlistfield||""" l on (l.dlffieldname = 'EstadoComercio' and l.clfcode = a.cmrstatus)
+    left join """||var_project_storage||"""."""||var_dataset_raw_mccenter_adq||"""."""||var_table_txlistfield||""" m on (m.dlffieldname = 'EstadoLogicoTerminal' and m.clfcode = a.cmrlogicalstatus)
+    left join """||var_project_storage||"""."""||var_dataset_raw_mccenter_adq||"""."""||var_table_txlistfield||""" n on (n.dlffieldname = 'EstadoTerminal' and n.clfcode = b.ctrstatus)
+    left join """||var_project_storage||"""."""||var_dataset_raw_mccenter_adq||"""."""||var_table_txlistfield||""" o on (o.dlffieldname = 'EstadoLogicoTerminal' and o.clfcode = b.ctrlogicalstatus)
+    left join ultimaversionmain p on (p.ctamerchantid = b.ctrmerchantid and p.ctaterminalnum = b.ctrterminalnum and p.ctaterminalsn = b.dtrterminalsn and p.seq = 1)
+    left join """||var_project_storage||"""."""||var_dataset_master_stage_product||"""."""||var_table_dataterminales_as||""" r on 
+      (
+        left(a.cmrmerchantid,7) = r.codcomercio and 
+        (
+          (
+            upper(b.dtrterminalsn) = right(replace(replace(r.serie,' ',''),'-',''),8) 
+            and left(trim(b.ctrmodel),7) <> 'Cliente' 
+            and r.marca in ('INGENICO','PAX','SUNMI','VERIFON','VERIFONE','SUMNI')
+          ) or 
+          (
+            b.dtre105sn = right(replace(replace(r.serie,'',''),'-',''),9)
+            and left(trim(b.ctrmodel),7) = 'Cliente'
+            and r.marca in ('DS1READ','DSPREAD','WISEPAD')
+          )
+        )
+      )
+    left join serie_corta r2 on (upper(b.dtrterminalsn) = right(replace(replace(r2.serie,' ',''),'-',''),8) and left(trim(b.ctrmodel),7) <> 'Cliente')
+    left join serie_corta_r3 r3 on (b.dtre105sn = right(replace(replace(r3.serie,' ',''),'-',''),9) and left(trim(b.ctrmodel),7) = 'Cliente')
+    left join temp_mcfm019i as mcfm019i on (left(a.cmrmerchantid,7) = mcfm019i.mecest)
+    /*left join """||var_project_storage||"""."""||var_dataset_raw_as400||"""."""||var_table_mcfm019i||""" as mcfm019i_2 on (left(cmrmerchantid,7) = mcfm019i_2.mecest)*/
+    left join temp_mcfv1001 mcfv1001 on (mcfm019i.mepfid = mcfv1001.pfpfid)
+    inner join `"""||var_project_sensitive||"""."""||var_dataset_secure_secrets||"""."""||var_table_config_protected_data||"""` cfu on 1=1 and cfu.code = 'C_FULL_NAME'
+    inner join `"""||var_project_sensitive||"""."""||var_dataset_secure_secrets||"""."""||var_table_config_protected_data||"""` cte on 1=1 and cte.code = 'C_TELEPHONE'
+    left join """||var_project_storage||"""."""||var_dataset_raw_dataentry_operaciones||"""."""||var_table_modelos_old_terminal_desuso||""" desuso on (upper(trim(b.ctrmodel)) = upper(desuso.modelo_mcc)) 
+    where 
+      a.cmrlogicalstatus = '0' 
+      and b.ctrlogicalstatus = '0' 
+      and b.ctrtype in ('2','3') 
+      and e.ctaapplicationid <> 'MAIN' 
+      and left(a.cmrmerchantid,1) <> '3'
+  """;
+  EXECUTE IMMEDIATE(query);
+
+  SET query = """
+    create or replace table """||var_project_storage||"""."""||var_dataset_master_stage_product||"""."""||var_table_terminal_cc||""" as
+    with ultimaversionmain as 
+    (
+      select 
+        ctafilesversion,
+        ctamerchantid,
+        ctaterminalnum,
+        ctaterminalsn,
+        row_number() over (partition by ctamerchantid, ctaterminalnum, ctaterminalsn order by ctafilesversion desc) as seq
+      from """||var_project_storage||"""."""||var_dataset_raw_mccenter_caco||"""."""||var_table_taterminalapplication||"""
+      where ctaapplicationid = 'MAIN'
+    ), serie_corta as 
+    (
+      select 
+        right(replace(replace(trim(serie),' ',''),'-',''),8) as serie_corta,
+        max(trim(serie)) as serie
+      from """||var_project_storage||"""."""||var_dataset_master_stage_product||"""."""||var_table_dataterminales_as||"""
+      where marca in ('INGENICO','PAX','SUNMI','VERIFON','VERIFONE','SUMNI')
+      group by all
+      having count(1) = 1
+    ), serie_corta_r3 as 
+    (
+      select 
+        right(replace(replace(trim(serie),' ',''),'-',''),9) as serie_corta,
+        max(trim(serie)) as serie
+      from """||var_project_storage||"""."""||var_dataset_master_stage_product||"""."""||var_table_dataterminales_as||"""
+      where marca in ('DS1READ','DSPREAD','WISEPAD') 
+      group by all
+      having count(1) = 1
+    ), temp_mcfm019i as 
+    (
+      select 
+        mecest,
+        case when trim(memcom) in ('0','1') then null else trim(memcom) end cod_madre,
+        mepfid,
+        party_id_izi
+      from """||var_project_storage||"""."""||var_dataset_raw_as400||"""."""||var_table_mcfm019i||"""
+    ), temp_mcfv1001 as 
+    (
+      select 
+        pfpfid,
+        pfpfnc 
+      from """||var_project_storage||"""."""||var_dataset_raw_as400||"""."""||var_table_mcfv1001||""" 
+      qualify row_number() over(partition by pfpfid order by pffing desc,pfhing desc) = 1
+    )
+    select 
+      a.cmrmerchantid as comercio,
+      case when trim(mcfv1001.pfpfnc) = 'IZI*' then 'C.COR-IZIPAY' else 'C.COR-PMP'	end adq_c_cor,
+      a.cmrmcc as rubro,
+      ifnull(mcfm019i.party_id_izi,a.party_id_izi) as party_id_izi,
+      i.dlfdescription as departamento,
+      j.dlfdescription as provincia,
+      k.dlfdescription as distrito,
+      b.ctrmultmerchant as multicomercio,
+      case when b.ctrmultmerchant in ('0','2') then true else false	end flag_multicomercio,
+      AEAD.DECRYPT_STRING(cte.key, a.dmrphone, cte.constant) as telefono_comercio,
+      AEAD.DECRYPT_STRING(cfu.key, a.dmrcontactname, cfu.constant) as contacto_comercio,
+      a.cmrprofileid as perfil_comercio,
+      c.ddpprofilename as perfil_descarga,
+      b.ctrterminalnum as terminal, 
+      b.dtrterminalsn as serie,
+      b.ntrlongitudtrama as medio_mcc,
+      b.dtrdescription as descripcion_terminal,
+      b.ftrlastechodate as fecha_ultimo_eco,
+      b.ftrlasttrxfindate as fecha_ultima_transaccion_financiera, 
+      b.ftrlasttrxadmdate as fecha_ultima_transaccion_administrativa,
+      trim(b.ctrmodel) as modelo_mcc,
+      nullif(trim(b.ntrswversion),'') as version_swb,
+      b.dtrosversion as os_version,
+      b.ntrchipnumber as chip,
+      AEAD.DECRYPT_STRING(cte.key, d.telefono, cte.constant) as telefono_chip,
+      case
+        when left(trim(b.ntrchipnumber),6) = '893407' then 'MOVISTAR-SM'
+        when left(trim(b.ntrchipnumber),6) = '895106' then 'MOVISTAR'
+        when left(trim(b.ntrchipnumber),6) = '895110' then 'CLARO'
+        when left(trim(b.ntrchipnumber),6) = '895117' then 'ENTEL'
+        when left(trim(b.ntrchipnumber),6) = '895115' then 'BITEL'
+        else upper(trim(d.operador)) end operador,
+      trim(l.dlfdescription) as estado_comercio,
+      trim(m.dlfdescription) as estado_logico_comercio,
+      trim(n.dlfdescription) as estado_terminal,
+      trim(o.dlfdescription) as estado_logico_terminal,
+      e.ctaapplicationid as aplicacion,
+      b.ctramountpaid as facturacion,
+      b.dtre105sn,
+      e.ctafilesversion as version_flujo,
+      p.ctafilesversion as version_main,
+      case 
+        when nullif(trim(b.dtrterminalcompletesn),'') <> '' and (upper(trim(desuso.medio)) <> 'MPOS' or upper(trim(desuso.medio)) is null) then right(upper(trim(replace(b.dtrterminalcompletesn,'-',''))),15)
+        when r.serie is not null then r.serie
+        when r2.serie is not null then r2.serie
+        when r3.serie is not null then r3.serie
+        end serie_completa,
+
+      if(f.cfltransactionid = '13', true, false) as pre_autorizacion_nivel_comercio,
+      if(g.ctattransactionid = '13', true, false) as pre_autorizacion_nivel_terminal,
+      case 
+        when h.cmacardwriter = '2' then true 
+        when h.cmacardwriter = '1' then false 
+        else false end digitacion_manual_nivel_comercio,
+      case 
+        when e.ctamultimerchantwriter = '2' then true 
+        when e.ctamultimerchantwriter = '1' then false
+        else false end digitacion_manual_nivel_terminal,
+      case
+        when e.ctaonlinetip = '0' then 'ONLINE'
+        when e.ctaonlinetip = '2' then 'AMBAS'
+        when e.ctaonlinetip = '3' then 'OFFLINE'
+        else 'NINGUNO' end propina,
+      e.ftaupdatedate as fecha_actualizacion_app,
+      e.htaupdatetime as hora_actualizacion_app,
+      b.ntrdownloadattempts as num_intentos,
+      b.ftrlastdownloaddate as fecha_ultima_actualizacion,
+      b.htrlastdownloadtime as hora_ultima_actualizacion,
+      if(e.ctaversionapl = q.dvrfile, true, false) as version_actualizado,
+      e.ctafilesversion,
+      q.cvrversionid,
+      e.ctaversionapl,
+      q.dvrfile,
+      r.marguesi,
+      r.feccompra,
+      r.modelo as modelo_as,
+      mcfm019i.cod_madre as cod_madre,
+      case 
+        when trim(r.estado) = 'A' then 'ACTIVO'
+        when trim(r.estado) = 'B' then 'BAJA'
+        when trim(r.estado) = 'Q' then 'ALQUILER'
+        when trim(r.estado) = 'V' then 'VENTA'
+        end situacion_as400,
+      'MCCENTER CAJERO CORRESPONSAL' as record_source
+    from """||var_project_storage||"""."""||var_dataset_raw_mccenter_caco||"""."""||var_table_tmmerchant||""" a
+    inner join """||var_project_storage||"""."""||var_dataset_raw_mccenter_caco||"""."""||var_table_tmterminal||""" b on (a.cmrmerchantid = b.ctrmerchantid)
+    left join """||var_project_storage||"""."""||var_dataset_raw_mccenter_caco||"""."""||var_table_tmchipsgprs||""" d	on (b.ntrchipnumber = d.simcard)
+    inner join """||var_project_storage||"""."""||var_dataset_raw_mccenter_caco||"""."""||var_table_taterminalapplication||""" e on (b.ctrterminalnum = e.ctaterminalnum and b.ctrmerchantid = e.ctamerchantid)
+    inner join """||var_project_storage||"""."""||var_dataset_raw_mccenter_caco||"""."""||var_table_tmdownloadprofile||""" c on (a.cmrdownloadprofile = c.cdpprofileid)
+    left join """||var_project_storage||"""."""||var_dataset_raw_mccenter_caco||"""."""||var_table_tafloorlimit||""" f on (a.cmrprofileid = f.cflmrprofileid and f.cflaplicacion = 'POS' and f.cfltransactionid = '13')
+    left join """||var_project_storage||"""."""||var_dataset_raw_mccenter_caco||"""."""||var_table_taterminalappltransaction||""" g on (b.ctrterminalnum = g.ctatterminalnum and b.ctrmerchantid = g.ctatmerchantid and g.ctattransactionid = '13')
+    left join """||var_project_storage||"""."""||var_dataset_raw_mccenter_caco||"""."""||var_table_tamerchantprofileapplication||""" h on (a.cmrprofileid = h.cmamerchantprofileid and e.ctaapplicationid = h.cmaapplicationid)
+    left join """||var_project_storage||"""."""||var_dataset_raw_mccenter_caco||"""."""||var_table_tmversion||""" q on (e.ctafilesversion = q.cvrversionid and e.ctaapplicationid = q.cvrapplicationid)
+    left join """||var_project_storage||"""."""||var_dataset_raw_mccenter_caco||"""."""||var_table_txlistfield||""" i on (i.dlffieldname = 'Provincia' and i.clfcode = a.cmrdepartcode)
+    left join """||var_project_storage||"""."""||var_dataset_raw_mccenter_caco||"""."""||var_table_txlistfield||""" j on (j.dlffieldname = 'Ciudad' and j.clfcode = a.cmrprovincecode)
+    left join """||var_project_storage||"""."""||var_dataset_raw_mccenter_caco||"""."""||var_table_txlistfield||""" k on (k.dlffieldname = 'Zona' and k.clfcode = a.cmrdistrictcode)
+    left join """||var_project_storage||"""."""||var_dataset_raw_mccenter_caco||"""."""||var_table_txlistfield||""" l on (l.dlffieldname = 'EstadoComercio' and l.clfcode = a.cmrstatus)
+    left join """||var_project_storage||"""."""||var_dataset_raw_mccenter_caco||"""."""||var_table_txlistfield||""" m on (m.dlffieldname = 'EstadoLogicoTerminal' and m.clfcode = a.cmrlogicalstatus)
+    left join """||var_project_storage||"""."""||var_dataset_raw_mccenter_caco||"""."""||var_table_txlistfield||""" n on (n.dlffieldname = 'EstadoTerminal' and n.clfcode = b.ctrstatus)
+    left join """||var_project_storage||"""."""||var_dataset_raw_mccenter_caco||"""."""||var_table_txlistfield||""" o on (o.dlffieldname = 'EstadoLogicoTerminal' and o.clfcode = b.ctrlogicalstatus)
+    left join ultimaversionmain p on (p.ctamerchantid = b.ctrmerchantid and p.ctaterminalnum = b.ctrterminalnum and p.ctaterminalsn = b.dtrterminalsn and p.seq = 1)
+    left join """||var_project_storage||"""."""||var_dataset_master_stage_product||"""."""||var_table_dataterminales_as||""" r on 
+      (
+        left(a.cmrmerchantid,7) = r.codcomercio and 
+        (
+          (
+            upper(b.dtrterminalsn) = right(replace(replace(r.serie,' ',''),'-',''),8) 
+            and left(trim(b.ctrmodel),7) <> 'Cliente' 
+            and r.marca in ('INGENICO','PAX','SUNMI','VERIFON','VERIFONE','SUMNI')
+          ) or 
+          (
+            b.dtre105sn = right(replace(replace(r.serie,'',''),'-',''),9) 
+            and left(trim(b.ctrmodel),7) = 'Cliente' 
+            and r.marca in ('DS1READ','DSPREAD','WISEPAD')
+          )
+        )
+      )	
+    left join serie_corta r2 on (upper(b.dtrterminalsn) = right(replace(replace(r2.serie,' ',''),'-',''),8) and left(trim(b.ctrmodel),7) <> 'Cliente')
+    left join serie_corta_r3 r3 on (b.dtre105sn = right(replace(replace(r3.serie,' ',''),'-',''),9) and left(trim(b.ctrmodel),7) = 'Cliente')
+    left join temp_mcfm019i mcfm019i on (left(cmrmerchantid,7) = mcfm019i.mecest)
+    left join temp_mcfv1001 mcfv1001 on (mcfm019i.mepfid = mcfv1001.pfpfid)
+    inner join `"""||var_project_sensitive||"""."""||var_dataset_secure_secrets||"""."""||var_table_config_protected_data||"""` cfu on 1=1 and cfu.code = 'C_FULL_NAME'
+    inner join `"""||var_project_sensitive||"""."""||var_dataset_secure_secrets||"""."""||var_table_config_protected_data||"""` cte on 1=1 and cte.code = 'C_TELEPHONE'
+    left join """||var_project_storage||"""."""||var_dataset_raw_dataentry_operaciones||"""."""||var_table_modelos_old_terminal_desuso||""" desuso on (upper(trim(b.ctrmodel)) = upper(desuso.modelo_mcc))
+    where 
+      a.cmrlogicalstatus = '0' 
+      and b.ctrlogicalstatus = '0' 
+      and b.ctrtype in ('2','3') 
+      and e.ctaapplicationid <> 'MAIN' 
+      and left(a.cmrmerchantid,1) = '3'
+  """;
+  EXECUTE IMMEDIATE(query);
+
+  SET query = """
+  create or replace table """||var_project_storage||"""."""||var_dataset_master_stage_product||"""."""||var_table_pre_m_terminal||""" as
+  select * from """||var_project_storage||"""."""||var_dataset_master_stage_product||"""."""||var_table_terminal_a||""" 
+  union all
+  select * from """||var_project_storage||"""."""||var_dataset_master_stage_product||"""."""||var_table_terminal_cc||""";
+  """;
+  EXECUTE IMMEDIATE(query);
+
+  SET query = """
+  insert into `"""||var_project_storage||"""."""||var_dataset_master_product||"""."""||var_table_m_terminal||"""` 
+  (
+    process_date,
+    cod_comercio,
+    cod_comercio_mccenter,
+    adq_cajero_corr,
+    categoria_comercio,
+    party_id_izi,
+    telefono_comercio,
+    contacto_comercio,
+    perfil_comercio,
+    perfil_descarga,
+    cod_terminal,
+    num_serie_sistema,
+    tipo_conexion_mcc,
+    tipo_conexion,
+    descripcion_terminal,
+    fecha_ult_conex_mccenter,
+    fecha_ult_trx_financiera,
+    fecha_ult_trx_administrativa,
+    situacion_terminal,
+    modelo_terminal_general,
+    modelo_terminal_mcc,
+    version_software,
+    version_firmware_contactless,
+    nro_chip,
+    nro_telefono_chip,
+    operador_chip,
+    estado_comercio,
+    estado_logico_comercio,
+    estado_terminal,
+    estado_logico_terminal,
+    tipo_aplicacion,
+    desc_aplicacion,
+    num_serie_mpos,
+    cod_version_flujo,
+    cod_version_main,
+    num_serie_real,
+    marca,
+    ind_propina,
+    fecha_actualizacion_app,
+    hora_actualizacion_app,
+    fecha_hora_actualizacion_app,
+    fecha_ult_actualizacion,
+    hora_ult_actualizacion,
+    fecha_hora_ult_actualizacion,
+    cod_version_app,
+    version_app,
+    version_flujo,
+    cod_marguesi,
+    fecha_compra,
+    situacion_as400,
+    cosecha,
+    oficina_comercio,
+    modelo_terminal_especifico,
+    fecha_instalacion,
+    cant_intento,
+    flag_terminal_activo,
+    flag_facturacion,
+    flag_software_contactless,
+    flag_hardware_contactless,
+    flag_pre_autorizacion_comercio,
+    flag_pre_autorizacion_terminal,
+    flag_dig_manual_comercio,
+    flag_dig_manual_terminal,
+    flag_version_actualizada,
+    flag_pos_emv_diners,
+    flag_pinpad,
+    flag_multicomercio,
+    record_source,
+    load_date,
+    creation_user
+  )
+  with series_completas as
+  (
+    select 
+      serie_completa,
+      cod_madre,
+      flag_multicomercio,
+      multicomercio,
+    from """||var_project_storage||"""."""||var_dataset_master_stage_product||"""."""||var_table_pre_m_terminal||"""
+    where serie_completa is not null
+    group by all
+  ), series_completas_u8 as
+  (
+    select
+      right(replace(replace(a.serie,' ',''),'-',''),8) as serie_corta,
+      min(a.serie) as serie
+    from """||var_project_storage||"""."""||var_dataset_master_stage_product||"""."""||var_table_dataterminales_as||""" a
+    left join series_completas b on (a.serie = b.serie_completa)
+    where 
+      a.marca in ('INGENICO','PAX','SUNMI','VERIFON','VERIFONE','SUMNI')
+      and a.estado <> 'B'
+      and (b.serie_completa is null or b.flag_multicomercio is true)
+    group by all
+  ), series_completas_u9 as
+  (
+    select
+      right(replace(replace(a.serie,' ',''),'-',''),9) as serie_corta,
+      min(a.serie) as serie
+    from """||var_project_storage||"""."""||var_dataset_master_stage_product||"""."""||var_table_dataterminales_as||""" a
+    left join series_completas b on (a.serie = b.serie_completa)
+    where 
+      a.marca in ('DS1READ','DSPREAD','WISEPAD')
+      and a.estado <> 'B'
+      and (b.serie_completa is null or b.flag_multicomercio is true)
+    group by all
+  ), m_terminal as
+  (
+    select 
+      a.* except(serie_completa), 
+      coalesce(a.serie_completa,d.serie_completa,b.serie,c.serie) as serie_completa
+    from """||var_project_storage||"""."""||var_dataset_master_stage_product||"""."""||var_table_pre_m_terminal||""" a
+    left join series_completas_u8 b on (a.serie = right(replace(replace(b.serie,' ',''),'-',''),8) and left(trim(a.modelo_mcc),7) <> 'Cliente')
+    left join series_completas_u9 c on (a.dtre105sn = right(replace(replace(c.serie,' ',''),'-',''),9) and left(trim(a.modelo_mcc),7) = 'Cliente')
+    left join series_completas d on 
+      ((a.cod_madre = d.cod_madre or d.cod_madre = left(a.comercio,7)) and left(a.adq_c_cor,3)='ADQ' and a.serie = right(replace(replace(d.serie_completa,' ',''),'-',''),8) and left(trim(a.modelo_mcc),7) <> 'Cliente')
+      or (left(a.adq_c_cor,5) = 'C.COR'	and a.serie = right(replace(replace(d.serie_completa,' ',''),'-',''),8) and left(trim(a.modelo_mcc),7) <> 'Cliente')
+  ), m_terminal_final as
+  (
+    select 
+      left(a.comercio,7) as cod_comercio,
+      a.comercio as cod_comercio_mccenter,
+      a.adq_c_cor as adq_cajero_corr,
+      case
+        when a.record_source = 'MCCENTER ADQUIRENTE' and c.cod_segmento = 'N' then '3. NEGOCIOS'
+        when a.record_source = 'MCCENTER ADQUIRENTE' and c.cod_segmento = 'E' then '2. EMPRESAS'
+        when a.record_source = 'MCCENTER ADQUIRENTE' and c.cod_segmento = 'G' then '1. GRANDES EMPRESAS'
+        when a.record_source = 'MCCENTER ADQUIRENTE' and c.cod_segmento = 'C' then '0. CORPORACIONES'
+        when a.record_source = 'MCCENTER CAJERO CORRESPONSAL' and a.aplicacion = 'BNACJCO' then '4. BANCO NACION'
+        when a.record_source = 'MCCENTER CAJERO CORRESPONSAL' and a.aplicacion = 'CAJERO' then '8. SCOTIABANK'
+        when a.record_source = 'MCCENTER CAJERO CORRESPONSAL' and a.aplicacion = 'CMACHYO' then '6. CMAC HUANCAYO'
+        when a.record_source = 'MCCENTER CAJERO CORRESPONSAL' and a.aplicacion = 'CMAREQUIPA' then '5. CMAC AREQUIPA'
+        when a.record_source = 'MCCENTER CAJERO CORRESPONSAL' and a.aplicacion = 'HERMESMB' then '8. SCOTIABANK'
+        when a.record_source = 'MCCENTER CAJERO CORRESPONSAL' and a.aplicacion = 'IBDIRECTO' then '7. INTERBANK'
+        when a.record_source = 'MCCENTER CAJERO CORRESPONSAL' and a.aplicacion = 'CMICA' then '9. CMAC ICA'
+        end categoria_comercio,
+      a.party_id_izi,
+      a.telefono_comercio,
+      a.contacto_comercio,
+      upper(trim(a.perfil_comercio)) as perfil_comercio,
+      upper(trim(a.perfil_descarga)) as perfil_descarga,
+      upper(trim(a.terminal)) as cod_terminal,
+      upper(trim(a.serie)) as num_serie_sistema,
+      nullif(upper(trim(a.medio_mcc)),'') as tipo_conexion_mcc,
+      ifnull
+        (
+          upper(d.medio),
+          case
+            when trim(a.chip) <> '' THEN 'GPRS FIJO'
+            when trim(a.medio_mcc) = 'ETHERNET' THEN 'IP'
+            when trim(a.medio_mcc) = 'DIAL' THEN 'DIAL'
+            else 'IP'	end
+        ) as tipo_conexion,
+      upper(trim(a.descripcion_terminal)) as descripcion_terminal,
+      safe.parse_date('%Y%m%d',a.fecha_ultimo_eco) as fecha_ult_conex_mccenter,
+      safe.parse_date('%Y%m%d',a.fecha_ultima_transaccion_financiera) as fecha_ult_trx_financiera,
+      safe.parse_date('%Y%m%d',a.fecha_ultima_transaccion_administrativa) as fecha_ult_trx_administrativa,
+      case
+        when a.fecha_ultima_transaccion_financiera is null then '99 - SIN REGISTRO DE TRX.'
+        when date_diff(current_date("America/Lima"), safe.parse_date('%Y%m%d',a.fecha_ultima_transaccion_financiera), month) > 12 then '2 - SIN MOVIMIENTO ÚLTIMOS 12 MESES'
+        when date_diff(current_date("America/Lima"), safe.parse_date('%Y%m%d',a.fecha_ultima_transaccion_financiera), month) > 6 then '6 - SIN MOVIMIENTO ÚLTIMOS 6 MESES'
+        when date_diff(current_date("America/Lima"), safe.parse_date('%Y%m%d',a.fecha_ultima_transaccion_financiera), month) > 3 then '4 - SIN MOVIMIENTO ÚLTIMOS 3 MESES'
+        when date_diff(current_date("America/Lima"), safe.parse_date('%Y%m%d',a.fecha_ultima_transaccion_financiera), month) >= 0 then '1 - CON MOVIMIENTO EN LOS ÚLTIMOS 3 MESES'
+        else '2 - SIN MOVIMIENTO ÚLTIMOS 12 MESES' end situacion_terminal,
+      nullif(upper(trim(a.modelo_as)),'') as modelo_terminal_general,
+      nullif(upper(trim(a.modelo_mcc)),'') as modelo_terminal_mcc,
+      nullif(upper(trim(a.version_swb)),'') as version_software,
+      nullif(upper(trim(a.os_version)),'') as version_firmware_contactless,
+      nullif(upper(trim(a.chip)),'') as nro_chip,
+      a.telefono_chip as nro_telefono_chip,
+      nullif(upper(trim(a.operador)),'') as operador_chip,
+      nullif(upper(trim(a.estado_comercio)),'') as estado_comercio,
+      nullif(upper(trim(a.estado_logico_comercio)),'') as estado_logico_comercio,
+      nullif(upper(trim(a.estado_terminal)),'') as estado_terminal,
+      nullif(upper(trim(a.estado_logico_terminal)),'') as estado_logico_terminal,
+      nullif(upper(trim(a.aplicacion)),'') as tipo_aplicacion,
+      case
+        when a.aplicacion = 'POS' then 'ADQUIRIENTE'
+        when a.aplicacion = 'BNACJCO' then 'BANCO NACION'
+        when a.aplicacion = 'BRIPLEY' then 'ADQUIRIENTE'
+        when a.aplicacion = 'CAJERO' then 'SCOTIABANK'
+        when a.aplicacion = 'CMACHYO' then 'CMAC HUANCAYO'
+        when a.aplicacion = 'CMAREQUIPA' then 'CMAC AREQUIPA'
+        when a.aplicacion = 'HERMESMB' then 'SCOTIABANK'
+        when a.aplicacion = 'IBDIRECTO' then 'INTERBANK'
+        when a.aplicacion = 'PUNTOS' then 'ADQUIRIENTE'
+        when a.aplicacion = 'APLSCOTCUPN' then 'ADQUIRIENTE'
+        when a.aplicacion = 'CMICA' then 'CMAC ICA'
+        end desc_aplicacion,
+      if(a.facturacion = '1', true, false) as flag_facturacion,
+      nullif(upper(trim(a.dtre105sn)),'') as num_serie_mpos,
+      nullif(upper(trim(a.version_flujo)),'') as cod_version_flujo,
+      nullif(upper(trim(a.version_main)),'') as cod_version_main,
+      nullif(upper(trim(a.serie_completa)),'') as num_serie_real,
+      case when d.marca is not null then upper(trim(d.marca))	else upper(trim(a.modelo_as))	end marca,
+      case
+        when a.record_source = 'MCCENTER CAJERO CORRESPONSAL' then null
+        when a.record_source = 'MCCENTER ADQUIRENTE' and d.ctls IN ('NO HW CTLS','NO SW CTLS') then false
+        when a.record_source = 'MCCENTER ADQUIRENTE' and a.version_swb in ('B7.854','B8.001','B8.002','B8.003','B8.012','B8.013','B8.014','B8.015','B8.017','B8.018','B8.019','B8.022','B8.100','B8.110','B8.111','B8.114','B8.306','B8.401','B8.420','B8.423','B8.460','B8.463','B8.464','B8.481','B8.4815','B80106','B80107','B80108','B80112','B80113','B80114','B80115','B80117','B80118','B80119') then false
+        else true	end flag_software_contactless,
+      case
+        when a.record_source = 'MCCENTER CAJERO CORRESPONSAL' then null
+        when a.record_source = 'MCCENTER ADQUIRENTE' and d.ctls = 'NO HW CTLS' then false
+        else true end flag_hardware_contactless,
+      a.pre_autorizacion_nivel_comercio as flag_pre_autorizacion_comercio,
+      a.pre_autorizacion_nivel_terminal as flag_pre_autorizacion_terminal,
+      a.digitacion_manual_nivel_comercio as flag_dig_manual_comercio,
+      a.digitacion_manual_nivel_terminal as flag_dig_manual_terminal,
+      a.propina as ind_propina,
+      safe.parse_date('%Y%m%d',a.fecha_actualizacion_app) as fecha_actualizacion_app,
+      format
+        ('%s:%s:%s',
+          lpad(safe_cast(substr(lpad(cast(a.hora_actualizacion_app as string), 6, '0'), 1, 2) as string), 2, '0'),
+          lpad(safe_cast(substr(lpad(cast(a.hora_actualizacion_app as string), 6, '0'), 3, 2) as string), 2, '0'),
+          lpad(safe_cast(substr(lpad(cast(a.hora_actualizacion_app as string), 6, '0'), 5, 2) as string), 2, '0')
+        ) as hora_actualizacion_app,
+      safe.parse_datetime
+        (
+          '%Y%m%d %H:%M:%S',
+          format
+          (
+            '%s %s:%s:%s',
+            cast(fecha_actualizacion_app as string),
+            substr(lpad(cast(hora_actualizacion_app as string), 6, '0'), 1, 2),
+            substr(lpad(cast(hora_actualizacion_app as string), 6, '0'), 3, 2),
+            substr(lpad(cast(hora_actualizacion_app as string), 6, '0'), 5, 2)
+          )
+        ) as fecha_hora_actualizacion_app,
+      safe_cast(a.num_intentos as int64) as cant_intento,
+      safe.parse_date('%Y%m%d',a.fecha_ultima_actualizacion) as fecha_ult_actualizacion,
+      format
+        ('%s:%s:%s',
+          lpad(safe_cast(substr(lpad(cast(a.hora_ultima_actualizacion as string), 6, '0'), 1, 2) as string), 2, '0'),
+          lpad(safe_cast(substr(lpad(cast(a.hora_ultima_actualizacion as string), 6, '0'), 3, 2) as string), 2, '0'),
+          lpad(safe_cast(substr(lpad(cast(a.hora_ultima_actualizacion as string), 6, '0'), 5, 2) as string), 2, '0')
+        ) as hora_ult_actualizacion,
+      safe.parse_datetime
+        (
+          '%Y%m%d %H:%M:%S',
+          format
+          (
+            '%s %s:%s:%s',
+            cast(a.fecha_ultima_actualizacion as string),
+            substr(lpad(cast(a.hora_ultima_actualizacion as string), 6, '0'), 1, 2),
+            substr(lpad(cast(a.hora_ultima_actualizacion as string), 6, '0'), 3, 2),
+            substr(lpad(cast(a.hora_ultima_actualizacion as string), 6, '0'), 5, 2)
+          )
+        ) as fecha_hora_ult_actualizacion,
+      a.version_actualizado as flag_version_actualizada,
+      upper(trim(a.cvrversionid)) as cod_version_app,
+      upper(trim(a.ctaversionapl)) as version_app,
+      upper(trim(a.dvrfile)) as version_flujo,
+      a.flag_multicomercio,
+      case
+        when a.record_source = 'MCCENTER CAJERO CORRESPONSAL' then null
+        when a.record_source = 'MCCENTER ADQUIRENTE' and (case when a.version_flujo = '' then 0 else safe_cast(a.version_flujo as int64) end) <= 214 and a.version_swb in ('B7.854','B8.001','B8.002','B8.003','B8.012','B8.013','B8.014','B8.015','B8.017','B8.018','B8.019','B8.022','B8.100','B8.110','B8.111','B8.114','B8.306','B8.401','B8.420','B80106','B80107','B80108','B80112','B80113','B80114','B80115','B80117','B80118','B80119') then false
+        when a.version_swb in ('B80106','B80107','B80108','B80112','B80113','B80114','B80115','B80117','B80118','B80119') then false
+        else true	end flag_pos_emv_diners,
+      case
+        when date_diff(current_date("America/Lima"), safe.parse_date('%Y%m%d',a.fecha_ultima_transaccion_financiera), month) >= 0 and date_diff(current_date("America/Lima"), safe.parse_date('%Y%m%d',a.fecha_ultima_transaccion_financiera), month) < 3 then true	
+        else false end flag_terminal_activo,
+      if(e.modelo_pinpad is not null and a.record_source = 'MCC ADQUIRENTE', true, false) as flag_pinpad,
+      c.fecha_apertura_comercio,
+      case
+        when date_diff(current_date("America/Lima"), c.fecha_apertura_comercio, MONTH) >= 12 THEN '1. COSECHA 1 AÑO A MÁS'
+        when date_diff(current_date("America/Lima"), c.fecha_apertura_comercio, MONTH) >= 6 THEN '2. COSECHA DE 6 A 12 MESES'
+        when date_diff(current_date("America/Lima"), c.fecha_apertura_comercio, MONTH) >= 3 THEN '3. COSECHA DE 3 A 6 MESES'
+        else concat('4. ', format_date('%Y%m', c.fecha_apertura_comercio))
+        end cosecha,
+      case
+        when upper(trim(a.departamento)) = 'LA LIBERTAD' THEN 'OF. TRUJILLO'
+        when upper(trim(a.departamento)) = 'AREQUIPA' THEN 'OF. AREQUIPA'
+        when upper(trim(a.departamento)) = 'PIURA' THEN 'OF. PIURA'
+        when upper(trim(a.departamento)) = 'CUSCO' THEN 'OF. CUSCO'
+        when upper(trim(a.departamento)) = 'LAMBAYEQUE' THEN 'OF. CHICLAYO'
+        when upper(trim(a.departamento)) = 'ICA' THEN 'OF. ICA'
+        when upper(trim(a.departamento)) = 'JUNIN' THEN 'OF. HUANCAYO'
+        when upper(trim(a.departamento)) = 'ANCASH' THEN 'OF. TRUJILLO'
+        when upper(trim(a.departamento)) = 'CAJAMARCA' THEN 'OF. CHICLAYO'
+        when upper(trim(a.departamento)) = 'LORETO' THEN 'OF. IQUITOS'
+        when upper(trim(a.departamento)) = 'SAN MARTIN' THEN 'OF. CHICLAYO'
+        when upper(trim(a.departamento)) = 'PUNO' THEN 'OF. CUSCO'
+        when upper(trim(a.departamento)) = 'UCAYALI' THEN 'OF. HUANCAYO'
+        when upper(trim(a.departamento)) = 'HUANUCO' THEN 'OF. HUANCAYO'
+        when upper(trim(a.departamento)) = 'TACNA' THEN 'OF. AREQUIPA'
+        when upper(trim(a.departamento)) = 'TUMBES' THEN 'OF. PIURA'
+        when upper(trim(a.departamento)) = 'AYACUCHO' THEN 'OF. ICA'
+        when upper(trim(a.departamento)) = 'MOQUEGUA' THEN 'OF. AREQUIPA'
+        when upper(trim(a.departamento)) = 'HUANCAVELICA' THEN 'OF.HUANCAYO'
+        when upper(trim(a.departamento)) = 'APURIMAC' THEN 'OF. CUSCO'
+        when upper(trim(a.departamento)) = 'AMAZONAS' THEN 'OF. CHICLAYO'
+        when upper(trim(a.departamento)) = 'PASCO' THEN 'OF. HUANCAYO'
+        when upper(trim(a.departamento)) = 'MADRE DE DIOS' THEN 'OF. CUSCO'
+        else 'LIMA'	end oficina_comercio,
+      coalesce(upper(trim(d.modelo_terminal)),upper(trim(a.modelo_mcc))) as modelo_terminal_especifico,
+      a.record_source,
+      min(a.marguesi) as cod_marguesi,
+      min(a.feccompra) as fecha_compra,
+      min(a.situacion_as400) as situacion_as400,
+      min(safe.parse_date('%Y%m%d',b.mdfere)) as fecha_instalacion
+    from m_terminal a
+    left join """||var_project_storage||"""."""||var_dataset_raw_as400||"""."""||var_table_mcfv030e||""" b on (b.mdterm <> '9999' and a.serie_completa = b.mdserm and left(a.comercio,7) = b.mdcoco)
+    left join """||var_project_storage||"""."""||var_dataset_master_party||"""."""||var_table_m_comercio||""" c on (left(a.comercio,7) = c.cod_comercio)
+    left join """||var_project_storage||"""."""||var_dataset_raw_dataentry_operaciones||"""."""||var_table_modelos_old_terminal_desuso||""" d on (upper(trim(a.modelo_mcc)) = upper(d.modelo_mcc))
+    left join """||var_project_storage||"""."""||var_dataset_raw_dataentry_operaciones||"""."""||var_table_modelo_terminal_pinpad||""" e on (upper(trim(a.modelo_as)) = upper(e.modelo_pinpad))
+    group by all
+  )
+  select
+    date('"""||var_fecha||"""') as process_date,
+    a.cod_comercio,
+    a.cod_comercio_mccenter,
+    a.adq_cajero_corr,
+    a.categoria_comercio,
+    a.party_id_izi,
+    AEAD.ENCRYPT(cte.key, a.telefono_comercio, cte.constant) as telefono_comercio,
+    AEAD.ENCRYPT(cfu.key, a.contacto_comercio, cfu.constant) as contacto_comercio,
+    a.perfil_comercio,
+    a.perfil_descarga,
+    a.cod_terminal,
+    a.num_serie_sistema,
+    a.tipo_conexion_mcc,
+    a.tipo_conexion,
+    a.descripcion_terminal,
+    a.fecha_ult_conex_mccenter,
+    a.fecha_ult_trx_financiera,
+    a.fecha_ult_trx_administrativa,
+    a.situacion_terminal,
+    a.modelo_terminal_general,
+    a.modelo_terminal_mcc,
+    a.version_software,
+    a.version_firmware_contactless,
+    a.nro_chip,
+    AEAD.ENCRYPT(cte.key, a.nro_telefono_chip, cte.constant) as nro_telefono_chip,
+    a.operador_chip,
+    a.estado_comercio,
+    a.estado_logico_comercio,
+    a.estado_terminal,
+    a.estado_logico_terminal,
+    a.tipo_aplicacion,
+    a.desc_aplicacion,
+    a.num_serie_mpos,
+    a.cod_version_flujo,
+    a.cod_version_main,
+    a.num_serie_real,
+    a.marca,
+    a.ind_propina,
+    a.fecha_actualizacion_app,
+    a.hora_actualizacion_app,
+    a.fecha_hora_actualizacion_app,
+    a.fecha_ult_actualizacion,
+    a.hora_ult_actualizacion,
+    a.fecha_hora_ult_actualizacion,
+    a.cod_version_app,
+    a.version_app,
+    a.version_flujo,
+    a.cod_marguesi,
+    a.fecha_compra,
+    a.situacion_as400,
+    a.cosecha,
+    a.oficina_comercio,
+    a.modelo_terminal_especifico,
+    a.fecha_instalacion,
+    a.cant_intento,
+    a.flag_terminal_activo,
+    a.flag_facturacion,
+    a.flag_software_contactless,
+    a.flag_hardware_contactless,
+    a.flag_pre_autorizacion_comercio,
+    a.flag_pre_autorizacion_terminal,
+    a.flag_dig_manual_comercio,
+    a.flag_dig_manual_terminal,
+    a.flag_version_actualizada,
+    a.flag_pos_emv_diners,
+    a.flag_pinpad,
+    a.flag_multicomercio,
+    a.record_source,
+    current_datetime('America/Lima') as load_date,
+    session_user() as creation_user
+  from m_terminal_final a
+  inner join `"""||var_project_sensitive||"""."""||var_dataset_secure_secrets||"""."""||var_table_config_protected_data||"""` cfu on 1=1 and cfu.code = 'C_FULL_NAME'
+  inner join `"""||var_project_sensitive||"""."""||var_dataset_secure_secrets||"""."""||var_table_config_protected_data||"""` cte on 1=1 and cte.code = 'C_TELEPHONE'
+
+  """;
+  EXECUTE IMMEDIATE(query);
+/*
+  SET query = """
+  drop table """||var_project_storage||"""."""||var_dataset_master_stage_product||"""."""||var_table_dataterminales_as||"""
+   """;
+  EXECUTE IMMEDIATE(query);
+  
+  SET query = """
+  drop table """||var_project_storage||"""."""||var_dataset_master_stage_product||"""."""||var_table_terminal_a||"""
+   """;
+  EXECUTE IMMEDIATE(query);
+  
+  SET query = """
+  drop table """||var_project_storage||"""."""||var_dataset_master_stage_product||"""."""||var_table_terminal_cc||"""
+   """;
+  EXECUTE IMMEDIATE(query);
+
+  SET query = """
+  drop table """||var_project_storage||"""."""||var_dataset_master_stage_product||"""."""||var_table_pre_m_terminal||"""
+   """;
+  EXECUTE IMMEDIATE(query);
+*/
+
+  /* CARGAR DE DATA HISTORICA (DIARIA Y MENSUAL) */
+
+  SET query = """
+    delete from `"""||var_project_storage||"""."""||var_dataset_master_product||"""."""||var_table_m_terminal||"""_h` 
+    where process_date = '"""||var_process_date||"""'
+  """;
+  EXECUTE IMMEDIATE(query);
+
+  SET query = """
+    insert into `"""||var_project_storage||"""."""||var_dataset_master_product||"""."""||var_table_m_terminal||"""_h` 
+    select *
+    from `"""||var_project_storage||"""."""||var_dataset_master_product||"""."""||var_table_m_terminal||"""` 
+    where process_date = '"""||var_process_date||"""'
+  """;
+  EXECUTE IMMEDIATE(query);
+  
+
+  SET query = """
+    delete from `"""||var_project_storage||"""."""||var_dataset_master_product||"""."""||var_table_m_terminal||"""_m` 
+    where process_date between '"""||var_process_date_ini||"""' and '"""||var_process_date_fin||"""'
+  """;
+  EXECUTE IMMEDIATE(query);
+
+  SET query = """
+    insert into `"""||var_project_storage||"""."""||var_dataset_master_product||"""."""||var_table_m_terminal||"""_m` 
+    select *
+    from `"""||var_project_storage||"""."""||var_dataset_master_product||"""."""||var_table_m_terminal||"""` 
+    where process_date between '"""||var_process_date_ini||"""' and '"""||var_process_date_fin||"""'
+  """;
+  EXECUTE IMMEDIATE(query);
+
+
+
+END;
+
+CREATE OR REPLACE PROCEDURE `prd-izipay-data-operation.raw_stage_as400.prc_load_as400_akfmitem`(var_project_operation STRING, var_project_storage STRING, var_project_sensitive STRING)
+BEGIN
+  DECLARE query STRING;
+  DECLARE cant INT64;
+  DECLARE var_table_tmp_akfmitem STRING;
+
+  DECLARE var_dataset_raw_stage_as400 STRING;
+  DECLARE var_dataset_raw_as400 STRING;
+  DECLARE var_table_akfmitem STRING;
+  DECLARE var_dataset_bq_omni_izipay_azure STRING;
+
+
+  SET var_dataset_raw_stage_as400 = 'raw_stage_as400';
+  SET var_dataset_raw_as400 = 'raw_as400';
+  SET var_table_akfmitem = 'akfmitem';
+  SET var_dataset_bq_omni_izipay_azure = 'bq_omni_izipay_azure_saizipaydatamarts';  
+
+  /*
+  DECLARE var_project_operation STRING;
+  DECLARE var_project_storage STRING;
+  DECLARE var_project_sensitive STRING;
+
+  SET var_project_operation = 'prd-izipay-data-operation';
+  SET var_project_storage = 'prd-izipay-data-storage-pv';
+  SET var_project_sensitive = 'prd-izipay-data-sensitive';
+  */
+
+  SET var_table_tmp_akfmitem = concat('tmp_',var_table_akfmitem);
+
+  /* Verificar si la tabla EXTERNA tiene contenido, guardar el conteo*/
+  SET query = """
+   select count(1)
+   from `"""||var_project_operation||"""."""||var_dataset_bq_omni_izipay_azure||"""."""||var_table_akfmitem||"""`
+  """;
+  EXECUTE IMMEDIATE(query)
+  into cant;
+
+  /* Si la tabla tiene contenido, insertar la data desde la tabla  EXTERNA hacia la tabla en DATA_STORAGE*/
+  IF IFNULL(cant,0) > 0 
+
+    THEN
+
+      /* Crear una tabla temporal con los datos sumando las columnas adicionales para auditoria*/
+      SET query = """
+        create or replace table `"""||var_project_operation||"""."""||var_dataset_raw_stage_as400||"""."""||var_table_tmp_akfmitem||"""` as
+        select
+		      cast(csiac as string) as csiac,
+          cast(cccos as string) as cccos,
+          cast(cseaf as string) as cseaf,
+          cast(cunfj as string) as cunfj,
+          cast(cclf1 as string) as cclf1,
+          cast(cclf2 as string) as cclf2,
+          cast(cclf3 as string) as cclf3,
+          cast(cclf4 as string) as cclf4,
+          cast(cacfj as string) as cacfj,
+          cast(tacfj as string) as tacfj,
+          cast(tmrfj as string) as tmrfj,
+          cast(tmofj as string) as tmofj,
+          cast(nsefj as string) as nsefj,
+          cast(cesfj as string) as cesfj,
+          cast(cidfj as string) as cidfj,
+          cast(cprov as string) as cprov,
+          cast(nnifj as string) as nnifj,
+          cast(dcofj as string) as dcofj,
+          cast(mcofj as string) as mcofj,
+          cast(acofj as string) as acofj,
+          cast(cmone as string) as cmone,
+          cast(itcmo as string) as itcmo,
+          cast(ipcfj as string) as ipcfj,
+          cast(pdefj as string) as pdefj,
+          cast(cdefj as string) as cdefj,
+          cast(irefj as string) as irefj,
+          cast(idefj as string) as idefj,
+          cast(irafj as string) as irafj,
+          cast(idafj as string) as idafj,
+          cast(midfj as string) as midfj,
+          cast(aidfj as string) as aidfj,
+          cast(dinfj as string) as dinfj,
+          cast(minfj as string) as minfj,
+          cast(ainfj as string) as ainfj,
+          cast(ducfj as string) as ducfj,
+          cast(mucfj as string) as mucfj,
+          cast(aucfj as string) as aucfj,
+          cast(cisfj as string) as cisfj,
+          cast(cilfj as string) as cilfj,
+          cast(pcifj as string) as pcifj,
+          cast(iajfj as string) as iajfj,
+          cast(usefj as string) as usefj,
+          cast(prdfj as string) as prdfj,
+          cast(guifj as string) as guifj,
+          cast(folfj as string) as folfj,
+          cast(fuprl as string) as fuprl,
+          cast(grrfj as string) as grrfj,
+          cast(fgrrfj as string) as fgrrfj,
+          cast(terfj as string) as terfj,
+          cast(invefj as string) as invefj,
+          cast(ipcfje as string) as ipcfje,
+          cast(esntfj as string) as esntfj,
+          cast(afcelu as string) as afcelu,
+          cast(afclns as string) as afclns,
+          cast(nsefjc as string) as nsefjc,
+          cast(aflico as string) as aflico,
+          cast(aftico as string) as aftico,
+          cast(afpgac as string) as afpgac,
+          cast(afacub as string) as afacub,
+          cast(aftiex as string) as aftiex,
+          cast(afosce as string) as afosce,
+          cast(afnume as string) as afnume,
+          cast(afnudo as string) as afnudo,
+          cast(affapa as string) as affapa,
+          cast(afsecc as string) as afsecc,
+          cast(didfj as string) as didfj,
+          cast(aftipc as string) as aftipc,
+          cast(afserc as string) as afserc,
+          cast(afnumc as string) as afnumc,
+          cast(afnorc as string) as afnorc,
+          cast(afsubs as string) as afsubs,
+          cast(afuser as string) as afuser,
+          cast(afcuot as string) as afcuot,
+          cast(afmven as string) as afmven,
+          cast(afrepo as string) as afrepo,
+          cast(afacls as string) as afacls,
+          cast(afgcod as string) as afgcod,
+          cast(affam as string) as affam,
+          cast(afsbf as string) as afsbf,
+          current_date ('America/Lima')-1 as process_date,
+          'AS400' as record_source,
+          timestamp(current_datetime('America/Lima')) as load_date
+        from `"""||var_project_operation||"""."""||var_dataset_bq_omni_izipay_azure||"""."""||var_table_akfmitem||"""` a
+      """;
+      EXECUTE IMMEDIATE(query);
+
+      /* Truncar la tabla destino antes de insertar los nuevos datos*/
+      SET query = """
+        truncate table `"""||var_project_storage||"""."""||var_dataset_raw_as400||"""."""||var_table_akfmitem||"""` 
+      """;
+      EXECUTE IMMEDIATE(query);
+
+      /* Insertar los datos desde la tabla temporal a la tabla destino*/
+      SET query = """
+        insert into `"""||var_project_storage||"""."""||var_dataset_raw_as400||"""."""||var_table_akfmitem||"""` 
+        (
+          csiac,
+          cccos,
+          cseaf,
+          cunfj,
+          cclf1,
+          cclf2,
+          cclf3,
+          cclf4,
+          cacfj,
+          tacfj,
+          tmrfj,
+          tmofj,
+          nsefj,
+          cesfj,
+          cidfj,
+          cprov,
+          nnifj,
+          dcofj,
+          mcofj,
+          acofj,
+          cmone,
+          itcmo,
+          ipcfj,
+          pdefj,
+          cdefj,
+          irefj,
+          idefj,
+          irafj,
+          idafj,
+          midfj,
+          aidfj,
+          dinfj,
+          minfj,
+          ainfj,
+          ducfj,
+          mucfj,
+          aucfj,
+          cisfj,
+          cilfj,
+          pcifj,
+          iajfj,
+          usefj,
+          prdfj,
+          guifj,
+          folfj,
+          fuprl,
+          grrfj,
+          fgrrfj,
+          terfj,
+          invefj,
+          ipcfje,
+          esntfj,
+          afcelu,
+          afclns,
+          nsefjc,
+          aflico,
+          aftico,
+          afpgac,
+          afacub,
+          aftiex,
+          afosce,
+          afnume,
+          afnudo,
+          affapa,
+          afsecc,
+          didfj,
+          aftipc,
+          afserc,
+          afnumc,
+          afnorc,
+          afsubs,
+          afuser,
+          afcuot,
+          afmven,
+          afrepo,
+          afacls,
+          afgcod,
+          affam,
+          afsbf,
+          process_date,
+          record_source,
+          load_date,
+          creation_user
+        )
+        select 
+          a.csiac,
+          a.cccos,
+          a.cseaf,
+          a.cunfj,
+          a.cclf1,
+          a.cclf2,
+          a.cclf3,
+          a.cclf4,
+          a.cacfj,
+          a.tacfj,
+          a.tmrfj,
+          a.tmofj,
+          a.nsefj,
+          a.cesfj,
+          a.cidfj,
+          a.cprov,
+          a.nnifj,
+          a.dcofj,
+          a.mcofj,
+          a.acofj,
+          a.cmone,
+          a.itcmo,
+          a.ipcfj,
+          a.pdefj,
+          a.cdefj,
+          a.irefj,
+          a.idefj,
+          a.irafj,
+          a.idafj,
+          a.midfj,
+          a.aidfj,
+          a.dinfj,
+          a.minfj,
+          a.ainfj,
+          a.ducfj,
+          a.mucfj,
+          a.aucfj,
+          a.cisfj,
+          a.cilfj,
+          a.pcifj,
+          a.iajfj,
+          a.usefj,
+          a.prdfj,
+          a.guifj,
+          a.folfj,
+          a.fuprl,
+          a.grrfj,
+          a.fgrrfj,
+          a.terfj,
+          a.invefj,
+          a.ipcfje,
+          a.esntfj,
+          a.afcelu,
+          a.afclns,
+          a.nsefjc,
+          a.aflico,
+          a.aftico,
+          a.afpgac,
+          a.afacub,
+          a.aftiex,
+          a.afosce,
+          a.afnume,
+          a.afnudo,
+          a.affapa,
+          a.afsecc,
+          a.didfj,
+          a.aftipc,
+          a.afserc,
+          a.afnumc,
+          a.afnorc,
+          a.afsubs,
+          a.afuser,
+          a.afcuot,
+          a.afmven,
+          a.afrepo,
+          a.afacls,
+          a.afgcod,
+          a.affam,
+          a.afsbf,
+          a.process_date,
+          a.record_source,
+          a.load_date,
+          session_user() as creation_user
+        from `"""||var_project_operation||"""."""||var_dataset_raw_stage_as400||"""."""||var_table_tmp_akfmitem||"""` a
+      """;
+      EXECUTE IMMEDIATE(query);
+
+      /* Eliminar la tabla temporal*/
+      SET query = """
+        drop table `"""||var_project_operation||"""."""||var_dataset_raw_stage_as400||"""."""||var_table_tmp_akfmitem||"""`
+      """;
+      EXECUTE IMMEDIATE(query);
+
+  END IF;
+END;
+
 
 
