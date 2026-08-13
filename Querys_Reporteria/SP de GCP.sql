@@ -4160,5 +4160,114 @@ BEGIN
   END IF;
 END;
 
+CREATE OR REPLACE PROCEDURE `prd-izipay-data-operation.raw_stage_as400.prc_load_as400_mcfm602`(var_project_operation STRING, var_project_storage STRING, var_project_sensitive STRING)
+BEGIN
+  DECLARE query STRING;
+  DECLARE cant INT64;
+  DECLARE var_table_tmp_mcfm602 STRING;
 
+  DECLARE var_dataset_raw_stage_as400 STRING;
+  DECLARE var_dataset_raw_as400 STRING;
+  DECLARE var_table_mcfm602 STRING;
+  DECLARE var_dataset_bq_omni_izipay_azure STRING;
+  DECLARE var_dataset_secure_secrets STRING;
+  DECLARE var_table_config_protected_data STRING;
+
+  SET var_dataset_raw_stage_as400 = 'raw_stage_as400';
+  SET var_dataset_raw_as400 = 'raw_as400';
+  SET var_table_mcfm602 = 'mcfm602';
+  SET var_dataset_bq_omni_izipay_azure = 'bq_omni_izipay_azure_saizipaydatamarts';  
+  SET var_dataset_secure_secrets = 'secure_secrets'; 
+  SET var_table_config_protected_data = 'config_protected_data';
+
+  /*
+  DECLARE var_project_operation STRING;
+  DECLARE var_project_storage STRING;
+  DECLARE var_project_sensitive STRING; --prd-izipay-data-sensitive --> proyecto independiente
+
+  SET var_project_operation = 'dev-izipay-data-operation';
+  SET var_project_storage = 'dev-izipay-data-storage';
+  SET var_project_sensitive = 'dev-izipay-data-storage';  
+  */
+
+  SET var_table_tmp_mcfm602 = concat('tmp_',var_table_mcfm602);
+
+  /* Verificar si la tabla EXTERNA tiene contenido, guardar el conteo*/
+  SET query = """
+   select count(1)
+   from `"""||var_project_operation||"""."""||var_dataset_bq_omni_izipay_azure||"""."""||var_table_mcfm602||"""`
+  """;
+  EXECUTE IMMEDIATE(query)
+  into cant;
+
+  /* Si la tabla tiene contenido, insertar la data desde la tabla  EXTERNA hacia la tabla en DATA_STORAGE*/
+  IF ifnull(cant,0) > 0 
+
+    THEN
+
+      /* Crear una tabla temporal con los datos sumando las columnas adicionales para auditoria*/
+      SET query = """
+        create or replace table `"""||var_project_operation||"""."""||var_dataset_raw_stage_as400||"""."""||var_table_tmp_mcfm602||"""` as
+        select
+          cast(codigb as string) as codigb,
+          cast(nombrb as string) as nombrb,          
+          cast(turnob as string) as turnob,
+          cast(dicesb as string) as dicesb,
+          cast(mecesb as string) as mecesb,
+          cast(aces4b as string) as aces4b,
+          cast(dptob as string) as dptob,
+          current_date ('America/Lima') as process_date,
+          'as400' as record_source,
+          cast(current_datetime('America/Lima') as timestamp) as load_date
+        from `"""||var_project_operation||"""."""||var_dataset_bq_omni_izipay_azure||"""."""||var_table_mcfm602||"""`        
+      """;
+      EXECUTE IMMEDIATE(query);
+
+      /* Truncar la tabla destino antes de insertar los nuevos datos*/
+      SET query = """
+        truncate table `"""||var_project_storage||"""."""||var_dataset_raw_as400||"""."""||var_table_mcfm602||"""` 
+      """;
+      EXECUTE IMMEDIATE(query);
+
+      /* Insertar los datos desde la tabla temporal a la tabla destino*/
+      SET query = """
+        insert into `"""||var_project_storage||"""."""||var_dataset_raw_as400||"""."""||var_table_mcfm602||"""` 
+        (
+          codigb,
+          nombrb,
+          turnob,
+          dicesb,
+          mecesb,
+          aces4b,
+          dptob,
+          process_date,
+          record_source,
+          load_date,
+          creation_user
+        )
+        select
+          a.codigb,
+          AEAD.ENCRYPT(b.key, cast(a.nombrb as string), b.constant) as nombrb,
+          a.turnob,
+          a.dicesb,
+          a.mecesb,
+          a.aces4b,
+          a.dptob,
+          a.process_date,
+          a.record_source,
+          a.load_date,
+          session_user() as creation_user
+        from `"""||var_project_operation||"""."""||var_dataset_raw_stage_as400||"""."""||var_table_tmp_mcfm602||"""` a
+        left join `"""||var_project_sensitive||"""."""||var_dataset_secure_secrets||"""."""||var_table_config_protected_data||"""` b on b.code = 'C_FULL_NAME'
+      """;
+      EXECUTE IMMEDIATE(query);
+
+      /* Eliminar la tabla temporal*/
+      SET query = """
+        drop table `"""||var_project_operation||"""."""||var_dataset_raw_stage_as400||"""."""||var_table_tmp_mcfm602||"""`
+      """;
+      EXECUTE IMMEDIATE(query);
+
+  END IF;
+END;
 
