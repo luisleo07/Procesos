@@ -1265,10 +1265,114 @@ left join `prd-izipay-data-sensitive.secure_secrets.config_protected_data` k_ema
 where c.flag_parque = true
   and c.flag_lyra = true
   and c.cod_situacion_comercio not in ('3','9')
-  
-  
-  
 
+
+  --->> query para buscar en la m_comercio por documento de identidad -->> 
+with
+cte_llaves as (
+  select
+    max(case when code = 'C_EMAIL'     then key      end) as email_key,
+    max(case when code = 'C_EMAIL'     then constant end) as email_const,
+    max(case when code = 'C_FULL_NAME' then key      end) as nombre_key,
+    max(case when code = 'C_FULL_NAME' then constant end) as nombre_const
+  from `prd-izipay-data-sensitive.secure_secrets.config_protected_data`
+  where code in ('C_EMAIL', 'C_FULL_NAME')
+),
+cte_comercio as (
+  select
+    party_id_izi,
+    cod_comercio,
+    nom_comercio,
+    cod_segmento,
+    segmento_parque,
+    correo_representante_legal,
+    correo_comercial,
+    nom_ejecutivo_kam,
+    nom_responsable_cuenta
+  from `prd-izipay-data-storage-pv.master_party.m_comercio`
+),
+cte_documentos as (
+  select distinct trim(documento)  as documento
+  from prd-izipay-data-operation.mc2253.subida_tarifas
+  where documento is not null
+),
+aux_iden_party_data_control as (
+  select
+    party_id_izi,
+    document_number
+  from prd-izipay-data-storage-pv.mc2253.base_cliente --prd-izipay-data-storage-pv.mc2253.iden_party_data_control
+  where flag_customer is true or flag_facilitador is true
+  qualify row_number() over (partition by party_id_izi order by document_number desc ) = 1
+)
+select
+  a.cod_comercio                                                                        as cod_comercio,
+  a.nom_comercio                                                                        as nombre_comercial,
+  c.documento                                                                           as documento,
+  case
+    when a.segmento_parque in ('BC', 'BI', 'BE') then 'CORPORACIONES'
+    when a.segmento_parque = 'BPE'                then 'NEGOCIOS'
+    when a.segmento_parque = 'RETAIL'             then 'RETAIL'
+    else 'SIN SEGMENTO'
+  end                                                                                    as segmento,
+  trim(SAFE.AEAD.DECRYPT_STRING(k.email_key,  a.correo_representante_legal, k.email_const))                                     as correo_representante_legal,
+  trim(SAFE.AEAD.DECRYPT_STRING(k.nombre_key, a.correo_comercial, k.nombre_const))                                              as correo_comercial,
+  trim(SAFE.AEAD.DECRYPT_STRING(k.nombre_key, a.nom_ejecutivo_kam, k.nombre_const))                                             as nombre_kam
+from cte_comercio a
+inner join aux_iden_party_data_control b on (a.party_id_izi = b.party_id_izi)
+inner join cte_documentos c on (c.documento = b.document_number)
+cross join cte_llaves k
+
+-->> busqueda para por cod_comercio
+  
+with
+-- llaves de desencriptado (solo las 2 que se usan: email y nombre)
+cte_llaves as (
+  select
+    max(case when code = 'C_EMAIL'     then key      end) as email_key,
+    max(case when code = 'C_EMAIL'     then constant end) as email_const,
+    max(case when code = 'C_FULL_NAME' then key      end) as nombre_key,
+    max(case when code = 'C_FULL_NAME' then constant end) as nombre_const
+  from `prd-izipay-data-sensitive.secure_secrets.config_protected_data`
+  where code in ('C_EMAIL', 'C_FULL_NAME')
+),
+
+-- listado de comercios ya cargado
+cte_documentos as (
+  select distinct trim(documento) cod_comercio_num
+  from prd-izipay-data-operation.mc2253.subida_tarifas
+  where documento is not null
+),
+
+-- ultima foto por comercio, solo columnas que pide la ficha
+cte_comercio as (
+  select
+    cod_comercio,
+    nom_comercio,
+    cod_segmento,
+    segmento_parque,
+    correo_representante_legal,
+    correo_comercial,
+    nom_ejecutivo_kam,
+    nom_responsable_cuenta
+  from `prd-izipay-data-storage-pv.master_party.m_comercio`
+  qualify row_number() over (partition by cod_comercio order by process_date desc) = 1
+)
+
+select
+  a.cod_comercio                                                                        as cod_comercio,
+  a.nom_comercio                                                                         as nombre_comercial,
+  case
+    when a.segmento_parque in ('BC', 'BI', 'BE') then 'CORPORACIONES'
+    when a.segmento_parque = 'BPE'                then 'NEGOCIOS'
+    when a.segmento_parque = 'RETAIL'             then 'RETAIL'
+    else 'SIN SEGMENTO'
+  end                                                                                    as segmento,
+  trim(SAFE.AEAD.DECRYPT_STRING(k.email_key,  a.correo_representante_legal, k.email_const))                                     as correo_representante_legal,
+  trim(SAFE.AEAD.DECRYPT_STRING(k.nombre_key, a.correo_comercial, k.nombre_const))                                              as correo_comercial,
+  trim(SAFE.AEAD.DECRYPT_STRING(k.nombre_key, a.nom_ejecutivo_kam, k.nombre_const))                                             as nombre_kam
+from cte_comercio a
+inner join cte_documentos d on (a.cod_comercio = d.cod_comercio_num)
+cross join cte_llaves k
 
 
 
