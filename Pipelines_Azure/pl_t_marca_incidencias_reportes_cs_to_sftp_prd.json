@@ -1,0 +1,676 @@
+{
+    "name": "pl_t_marca_incidencias_reportes_cs_to_sftp_prd",
+    "properties": {
+        "activities": [
+            {
+                "name": "var_anio",
+                "type": "SetVariable",
+                "dependsOn": [],
+                "policy": {
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "variableName": "var_anio",
+                    "value": {
+                        "value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SA Pacific Standard Time'), 'yyyy')",
+                        "type": "Expression"
+                    }
+                }
+            },
+            {
+                "name": "var_mes",
+                "type": "SetVariable",
+                "dependsOn": [
+                    {
+                        "activity": "var_anio",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "variableName": "var_mes",
+                    "value": {
+                        "value": "@formatDateTime(convertTimeZone(utcNow(), 'UTC', 'SA Pacific Standard Time'), 'MM')",
+                        "type": "Expression"
+                    }
+                }
+            },
+            {
+                "name": "var_ruta_gcp",
+                "type": "SetVariable",
+                "dependsOn": [
+                    {
+                        "activity": "var_mes",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "variableName": "var_ruta_gcp",
+                    "value": {
+                        "value": "@concat('Experiencia_al_Cliente/Comunicacion_Incidencias/', variables('var_anio'), '/', variables('var_mes'))",
+                        "type": "Expression"
+                    }
+                }
+            },
+            {
+                "name": "var_ruta_adls_stage",
+                "type": "SetVariable",
+                "dependsOn": [
+                    {
+                        "activity": "var_ruta_gcp",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "variableName": "var_ruta_adls_stage",
+                    "value": {
+                        "value": "@concat('Marca/Experiencia al Cliente/Comunicaciones/', variables('var_anio'), '/', variables('var_mes'))",
+                        "type": "Expression"
+                    }
+                }
+            },
+            {
+                "name": "var_ruta_sftp_especificos",
+                "type": "SetVariable",
+                "dependsOn": [
+                    {
+                        "activity": "var_ruta_adls_stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "variableName": "var_ruta_sftp_especificos",
+                    "value": {
+                        "value": "@concat('Prd/Reportes/Marca/Comunicacion Incidencias/Especificos')",
+                        "type": "Expression"
+                    }
+                }
+            },
+            {
+                "name": "var_ruta_sftp_bancos",
+                "type": "SetVariable",
+                "dependsOn": [
+                    {
+                        "activity": "var_ruta_adls_stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "variableName": "var_ruta_sftp_bancos",
+                    "value": {
+                        "value": "@concat('Prd/Reportes/Marca/Comunicacion Incidencias/Bancos')",
+                        "type": "Expression"
+                    }
+                }
+            },
+            {
+                "name": "copiar_rucs_adls",
+                "type": "Copy",
+                "dependsOn": [
+                    {
+                        "activity": "var_ruta_adls_stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "DelimitedTextSource",
+                        "storeSettings": {
+                            "type": "GoogleCloudStorageReadSettings",
+                            "recursive": false
+                        },
+                        "formatSettings": {
+                            "type": "DelimitedTextReadSettings"
+                        }
+                    },
+                    "sink": {
+                        "type": "DelimitedTextSink",
+                        "storeSettings": {
+                            "type": "AzureBlobFSWriteSettings"
+                        },
+                        "formatSettings": {
+                            "type": "DelimitedTextWriteSettings",
+                            "quoteAllText": true,
+                            "fileExtension": ".csv"
+                        }
+                    },
+                    "enableStaging": false,
+                    "translator": {
+                        "type": "TabularTranslator",
+                        "typeConversion": true,
+                        "typeConversionSettings": {
+                            "allowDataTruncation": true,
+                            "treatBooleanAsNumber": false
+                        }
+                    }
+                },
+                "inputs": [
+                    {
+                        "referenceName": "ds_gcp_csv_generico_prd01",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "par_bucket": "adls-reportes",
+                            "par_ruta": {
+                                "value": "@variables('var_ruta_gcp')",
+                                "type": "Expression"
+                            },
+                            "par_archivo": "DATA_REPORTE_COMUNICACION_X_RUCS.csv",
+                            "par_delimitador": ",",
+                            "par_comillas": "\""
+                        }
+                    }
+                ],
+                "outputs": [
+                    {
+                        "referenceName": "ds_container_generico_con_cabecera_csv_prd",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "path": {
+                                "value": "@variables('var_ruta_adls_stage')",
+                                "type": "Expression"
+                            },
+                            "file": "DATA_REPORTE_COMUNICACION_X_RUCS.csv",
+                            "delimitador": ",",
+                            "comillas": "\"",
+                            "container": "adls-reportes"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "copiar_comercios_adls",
+                "type": "Copy",
+                "dependsOn": [
+                    {
+                        "activity": "var_ruta_adls_stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "DelimitedTextSource",
+                        "storeSettings": {
+                            "type": "GoogleCloudStorageReadSettings",
+                            "recursive": false
+                        },
+                        "formatSettings": {
+                            "type": "DelimitedTextReadSettings"
+                        }
+                    },
+                    "sink": {
+                        "type": "DelimitedTextSink",
+                        "storeSettings": {
+                            "type": "AzureBlobFSWriteSettings"
+                        },
+                        "formatSettings": {
+                            "type": "DelimitedTextWriteSettings",
+                            "quoteAllText": true,
+                            "fileExtension": ".csv"
+                        }
+                    },
+                    "enableStaging": false,
+                    "translator": {
+                        "type": "TabularTranslator",
+                        "typeConversion": true,
+                        "typeConversionSettings": {
+                            "allowDataTruncation": true,
+                            "treatBooleanAsNumber": false
+                        }
+                    }
+                },
+                "inputs": [
+                    {
+                        "referenceName": "ds_gcp_csv_generico_prd01",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "par_bucket": "adls-reportes",
+                            "par_ruta": {
+                                "value": "@variables('var_ruta_gcp')",
+                                "type": "Expression"
+                            },
+                            "par_archivo": "DATA_REPORTE_COMUNICACION_X_COMERCIOS.csv",
+                            "par_delimitador": ",",
+                            "par_comillas": "\""
+                        }
+                    }
+                ],
+                "outputs": [
+                    {
+                        "referenceName": "ds_container_generico_con_cabecera_csv_prd",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "path": {
+                                "value": "@variables('var_ruta_adls_stage')",
+                                "type": "Expression"
+                            },
+                            "file": "DATA_REPORTE_COMUNICACION_X_COMERCIOS.csv",
+                            "delimitador": ",",
+                            "comillas": "\"",
+                            "container": "adls-reportes"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "copiar_bancos_adls",
+                "type": "Copy",
+                "dependsOn": [
+                    {
+                        "activity": "var_ruta_adls_stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "DelimitedTextSource",
+                        "storeSettings": {
+                            "type": "GoogleCloudStorageReadSettings",
+                            "recursive": false
+                        },
+                        "formatSettings": {
+                            "type": "DelimitedTextReadSettings"
+                        }
+                    },
+                    "sink": {
+                        "type": "DelimitedTextSink",
+                        "storeSettings": {
+                            "type": "AzureBlobFSWriteSettings"
+                        },
+                        "formatSettings": {
+                            "type": "DelimitedTextWriteSettings",
+                            "quoteAllText": true,
+                            "fileExtension": ".csv"
+                        }
+                    },
+                    "enableStaging": false,
+                    "translator": {
+                        "type": "TabularTranslator",
+                        "typeConversion": true,
+                        "typeConversionSettings": {
+                            "allowDataTruncation": true,
+                            "treatBooleanAsNumber": false
+                        }
+                    }
+                },
+                "inputs": [
+                    {
+                        "referenceName": "ds_gcp_csv_generico_prd01",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "par_bucket": "adls-reportes",
+                            "par_ruta": {
+                                "value": "@variables('var_ruta_gcp')",
+                                "type": "Expression"
+                            },
+                            "par_archivo": "DATA_REPORTE_COMUNICACION_X_BANCO_PAGADOR.csv",
+                            "par_delimitador": ",",
+                            "par_comillas": "\""
+                        }
+                    }
+                ],
+                "outputs": [
+                    {
+                        "referenceName": "ds_container_generico_con_cabecera_csv_prd",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "path": {
+                                "value": "@variables('var_ruta_adls_stage')",
+                                "type": "Expression"
+                            },
+                            "file": "DATA_REPORTE_COMUNICACION_X_BANCO_PAGADOR.csv",
+                            "delimitador": ",",
+                            "comillas": "\"",
+                            "container": "adls-reportes"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "copiar_rucs_sftp",
+                "type": "Copy",
+                "dependsOn": [
+                    {
+                        "activity": "copiar_rucs_adls",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "DelimitedTextSource",
+                        "storeSettings": {
+                            "type": "AzureBlobFSReadSettings",
+                            "recursive": false
+                        },
+                        "formatSettings": {
+                            "type": "DelimitedTextReadSettings"
+                        }
+                    },
+                    "sink": {
+                        "type": "DelimitedTextSink",
+                        "storeSettings": {
+                            "type": "SftpWriteSettings",
+                            "operationTimeout": "01:00:00",
+                            "useTempFileRename": true
+                        },
+                        "formatSettings": {
+                            "type": "DelimitedTextWriteSettings",
+                            "quoteAllText": true,
+                            "fileExtension": ".csv"
+                        }
+                    },
+                    "enableStaging": false,
+                    "translator": {
+                        "type": "TabularTranslator",
+                        "typeConversion": true,
+                        "typeConversionSettings": {
+                            "allowDataTruncation": true,
+                            "treatBooleanAsNumber": false
+                        }
+                    }
+                },
+                "inputs": [
+                    {
+                        "referenceName": "ds_container_generico_con_cabecera_csv_prd",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "path": {
+                                "value": "@variables('var_ruta_adls_stage')",
+                                "type": "Expression"
+                            },
+                            "file": "DATA_REPORTE_COMUNICACION_X_RUCS.csv",
+                            "delimitador": ",",
+                            "comillas": "\"",
+                            "container": "adls-reportes"
+                        }
+                    }
+                ],
+                "outputs": [
+                    {
+                        "referenceName": "ds_sftp_generico_con_cabecera_csv_prd",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "path": {
+                                "value": "@variables('var_ruta_sftp_especificos')",
+                                "type": "Expression"
+                            },
+                            "file": "DATA_REPORTE_COMUNICACION_X_RUCS.csv",
+                            "delimitador": ",",
+                            "comillas": "\""
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "copiar_comercios_sftp",
+                "type": "Copy",
+                "dependsOn": [
+                    {
+                        "activity": "copiar_comercios_adls",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "DelimitedTextSource",
+                        "storeSettings": {
+                            "type": "AzureBlobFSReadSettings",
+                            "recursive": false
+                        },
+                        "formatSettings": {
+                            "type": "DelimitedTextReadSettings"
+                        }
+                    },
+                    "sink": {
+                        "type": "DelimitedTextSink",
+                        "storeSettings": {
+                            "type": "SftpWriteSettings",
+                            "operationTimeout": "01:00:00",
+                            "useTempFileRename": true
+                        },
+                        "formatSettings": {
+                            "type": "DelimitedTextWriteSettings",
+                            "quoteAllText": true,
+                            "fileExtension": ".csv"
+                        }
+                    },
+                    "enableStaging": false,
+                    "translator": {
+                        "type": "TabularTranslator",
+                        "typeConversion": true,
+                        "typeConversionSettings": {
+                            "allowDataTruncation": true,
+                            "treatBooleanAsNumber": false
+                        }
+                    }
+                },
+                "inputs": [
+                    {
+                        "referenceName": "ds_container_generico_con_cabecera_csv_prd",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "path": {
+                                "value": "@variables('var_ruta_adls_stage')",
+                                "type": "Expression"
+                            },
+                            "file": "DATA_REPORTE_COMUNICACION_X_COMERCIOS.csv",
+                            "delimitador": ",",
+                            "comillas": "\"",
+                            "container": "adls-reportes"
+                        }
+                    }
+                ],
+                "outputs": [
+                    {
+                        "referenceName": "ds_sftp_generico_con_cabecera_csv_prd",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "path": {
+                                "value": "@variables('var_ruta_sftp_especificos')",
+                                "type": "Expression"
+                            },
+                            "file": "DATA_REPORTE_COMUNICACION_X_COMERCIOS.csv",
+                            "delimitador": ",",
+                            "comillas": "\""
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "copiar_bancos_sftp",
+                "type": "Copy",
+                "dependsOn": [
+                    {
+                        "activity": "copiar_bancos_adls",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "DelimitedTextSource",
+                        "storeSettings": {
+                            "type": "AzureBlobFSReadSettings",
+                            "recursive": false
+                        },
+                        "formatSettings": {
+                            "type": "DelimitedTextReadSettings"
+                        }
+                    },
+                    "sink": {
+                        "type": "DelimitedTextSink",
+                        "storeSettings": {
+                            "type": "SftpWriteSettings",
+                            "operationTimeout": "01:00:00",
+                            "useTempFileRename": true
+                        },
+                        "formatSettings": {
+                            "type": "DelimitedTextWriteSettings",
+                            "quoteAllText": true,
+                            "fileExtension": ".csv"
+                        }
+                    },
+                    "enableStaging": false,
+                    "translator": {
+                        "type": "TabularTranslator",
+                        "typeConversion": true,
+                        "typeConversionSettings": {
+                            "allowDataTruncation": true,
+                            "treatBooleanAsNumber": false
+                        }
+                    }
+                },
+                "inputs": [
+                    {
+                        "referenceName": "ds_container_generico_con_cabecera_csv_prd",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "path": {
+                                "value": "@variables('var_ruta_adls_stage')",
+                                "type": "Expression"
+                            },
+                            "file": "DATA_REPORTE_COMUNICACION_X_BANCO_PAGADOR.csv",
+                            "delimitador": ",",
+                            "comillas": "\"",
+                            "container": "adls-reportes"
+                        }
+                    }
+                ],
+                "outputs": [
+                    {
+                        "referenceName": "ds_sftp_generico_con_cabecera_csv_prd",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "path": {
+                                "value": "@variables('var_ruta_sftp_bancos')",
+                                "type": "Expression"
+                            },
+                            "file": "DATA_REPORTE_COMUNICACION_X_BANCO_PAGADOR.csv",
+                            "delimitador": ",",
+                            "comillas": "\""
+                        }
+                    }
+                ]
+            }
+        ],
+        "variables": {
+            "var_anio": {
+                "type": "String"
+            },
+            "var_mes": {
+                "type": "String"
+            },
+            "var_ruta_gcp": {
+                "type": "String"
+            },
+            "var_ruta_adls_stage": {
+                "type": "String"
+            },
+            "var_ruta_sftp_especificos": {
+                "type": "String"
+            },
+            "var_ruta_sftp_bancos": {
+                "type": "String"
+            }
+        },
+        "folder": {
+            "name": "adls_reportes/Marca/Comunicacion Incidencias"
+        },
+        "annotations": []
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}
