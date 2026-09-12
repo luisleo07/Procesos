@@ -1,0 +1,13 @@
+db-dtypes==1.2.0
+fastapi==0.115.0
+google-cloud-bigquery==3.25.0
+google-cloud-storage==2.18.0
+gunicorn==23.0.0
+openai==1.96.1
+pandas==2.2.2
+psycopg2-binary==2.9.9
+pydantic==2.7.4
+rapidfuzz==3.9.4
+uvicorn[standard]==0.30.6
+google-cloud-bigquery-storage==2.25.0
+pyarrow==15.0.0

@@ -1,0 +1,62 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  annotations:
+    run.googleapis.com/ingress: all
+    run.googleapis.com/ingress-status: all
+    run.googleapis.com/maxScale: '100'
+    run.googleapis.com/urls: '["https://fraude-comparador-v6-322392286721.us-central1.run.app","https://fraude-comparador-v6-dl7olq7kiq-uc.a.run.app"]'
+  labels:
+    cloud.googleapis.com/location: us-central1
+  name: fraude-comparador-v6
+  namespace: '322392286721'
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: '5'
+        autoscaling.knative.dev/minScale: '1'
+        run.googleapis.com/client-name: gcloud
+        run.googleapis.com/client-version: 564.0.0
+        run.googleapis.com/startup-cpu-boost: 'true'
+      labels:
+        client.knative.dev/nonce: ragakpyqrv
+        run.googleapis.com/startupProbeType: Default
+    spec:
+      containerConcurrency: 10
+      containers:
+      - env:
+        - name: PG_DSN
+          value: postgresql://postgres:<<DB_PASSWORD>>@<<DB_HOST>>:5432/backoffice_test
+        - name: GPT51_ENDPOINT
+          value: https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com
+        - name: GPT51_API_KEY
+          value: <<AZURE_OPENAI_API_KEY>>
+        - name: GPT51_DEPLOYMENT
+          value: gpt-5.1-chat
+        - name: HF_TOKEN
+        - name: VECTOR_TOPK
+          value: '10'
+        - name: FUZZY_TOPK
+          value: '10'
+        - name: DISABLE_EMBEDDINGS
+          value: '1'
+        image: us-central1-docker.pkg.dev/dev-izipay-advanced-analytics/backoffice-api/fraude-comparador-v6:v6.2
+        ports:
+        - containerPort: 8080
+          name: http1
+        resources:
+          limits:
+            cpu: '4'
+            memory: 8Gi
+        startupProbe:
+          failureThreshold: 1
+          periodSeconds: 240
+          tcpSocket:
+            port: 8080
+          timeoutSeconds: 240
+      serviceAccountName: dev-izipay-iexpress-api-segmen@dev-izipay-advanced-analytics.iam.gserviceaccount.com
+      timeoutSeconds: 3600
+  traffic:
+  - latestRevision: true
+    percent: 100

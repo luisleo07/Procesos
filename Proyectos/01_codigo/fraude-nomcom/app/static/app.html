@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fraude NomCom — Izipay</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #0a0e17;
+  --bg-card: #111827;
+  --bg-card-hover: #1a2332;
+  --border: #1e293b;
+  --border-focus: #3b82f6;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --accent: #3b82f6;
+  --accent-glow: rgba(59,130,246,0.15);
+  --alta: #ef4444;
+  --alta-bg: rgba(239,68,68,0.12);
+  --alta-border: rgba(239,68,68,0.3);
+  --media: #f59e0b;
+  --media-bg: rgba(245,158,11,0.12);
+  --media-border: rgba(245,158,11,0.3);
+  --baja: #64748b;
+  --baja-bg: rgba(100,116,139,0.12);
+  --baja-border: rgba(100,116,139,0.3);
+  --success: #10b981;
+  --info-bg: rgba(59,130,246,0.08);
+  --info-border: rgba(59,130,246,0.25);
+  --radius: 12px;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Plus Jakarta Sans', sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: var(--sans); background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; }
+body::before {
+  content:''; position:fixed; top:-50%; left:-50%; width:200%; height:200%;
+  background: radial-gradient(ellipse at 30% 20%, rgba(59,130,246,0.06) 0%, transparent 50%),
+              radial-gradient(ellipse at 70% 80%, rgba(139,92,246,0.04) 0%, transparent 50%);
+  z-index:0; pointer-events:none;
+}
+.container { position:relative; z-index:1; max-width:960px; margin:0 auto; padding:40px 24px; }
+
+/* Header */
+.header { display:flex; align-items:center; gap:16px; margin-bottom:24px; }
+.header-icon { width:48px; height:48px; background:linear-gradient(135deg,var(--accent),#8b5cf6); border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; box-shadow:0 0 30px rgba(59,130,246,0.2); }
+.header h1 { font-size:26px; font-weight:800; letter-spacing:-0.5px; }
+.header p { color:var(--text-muted); font-size:14px; margin-top:2px; }
+.version-badge { font-family:var(--mono); font-size:11px; background:var(--bg-card); border:1px solid var(--border); padding:4px 10px; border-radius:20px; color:var(--text-muted); margin-left:auto; }
+
+/* Info Panel */
+.info-panel {
+  background: var(--info-bg); border:1px solid var(--info-border); border-radius:var(--radius);
+  padding:20px 24px; margin-bottom:24px; position:relative;
+}
+.info-panel-header { display:flex; align-items:center; gap:10px; cursor:pointer; }
+.info-panel-header h3 { font-size:14px; font-weight:700; color:var(--accent); }
+.info-panel-toggle { margin-left:auto; font-size:18px; color:var(--accent); transition:transform 0.2s; }
+.info-panel-toggle.open { transform:rotate(180deg); }
+.info-panel-body { margin-top:16px; font-size:13px; line-height:1.7; color:var(--text-secondary); }
+.info-panel-body.hidden { display:none; }
+.info-panel-body h4 { color:var(--text-primary); font-size:13px; margin:12px 0 6px; }
+.info-code { font-family:var(--mono); font-size:12px; background:rgba(0,0,0,0.3); border-radius:8px; padding:12px 16px; margin:8px 0; color:#93c5fd; overflow-x:auto; white-space:pre; display:block; }
+.info-panel-body p { margin-bottom:8px; }
+.info-tag { display:inline-block; font-family:var(--mono); font-size:11px; background:rgba(59,130,246,0.15); color:var(--accent); padding:2px 8px; border-radius:4px; }
+
+/* Status */
+.status-bar { display:flex; gap:16px; margin-bottom:24px; font-size:12px; color:var(--text-muted); font-family:var(--mono); }
+.status-item { display:flex; align-items:center; gap:6px; }
+.status-dot { width:8px; height:8px; border-radius:50%; background:var(--success); animation:pulse 2s infinite; }
+.status-dot.offline { background:var(--alta); animation:none; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+
+/* Search */
+.search-section { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:28px; margin-bottom:24px; transition:border-color 0.3s; }
+.search-section:focus-within { border-color:var(--border-focus); box-shadow:0 0 0 3px var(--accent-glow); }
+.search-label { font-size:13px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; display:block; }
+.search-row { display:flex; gap:12px; }
+.search-input { flex:1; background:var(--bg-primary); border:1px solid var(--border); border-radius:10px; padding:14px 18px; font-family:var(--mono); font-size:16px; color:var(--text-primary); outline:none; transition:border-color 0.2s; }
+.search-input:focus { border-color:var(--accent); }
+.search-input::placeholder { color:var(--text-muted); font-family:var(--sans); font-size:14px; }
+.btn-search { background:var(--accent); color:white; border:none; border-radius:10px; padding:14px 28px; font-family:var(--sans); font-weight:700; font-size:14px; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
+.btn-search:hover { background:#2563eb; transform:translateY(-1px); box-shadow:0 4px 20px rgba(59,130,246,0.3); }
+.btn-search:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+.search-options { display:flex; gap:20px; margin-top:14px; }
+.checkbox-label { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text-secondary); cursor:pointer; }
+.checkbox-label input { accent-color:var(--accent); width:16px; height:16px; }
+
+/* Results */
+.results-section { display:none; }
+.results-section.active { display:block; }
+.results-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+.results-title { font-size:15px; font-weight:600; }
+.results-meta { font-family:var(--mono); font-size:12px; color:var(--text-muted); }
+.norm-display { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:12px 16px; margin-bottom:16px; font-family:var(--mono); font-size:13px; display:flex; gap:12px; align-items:center; }
+.norm-label { color:var(--text-muted); font-size:11px; text-transform:uppercase; letter-spacing:0.5px; }
+.norm-value { color:var(--accent); font-weight:600; }
+
+/* Match Card */
+.match-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:20px; margin-bottom:12px; position:relative; overflow:hidden; }
+.match-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:4px; }
+.match-card.alta { border-color:var(--alta-border); background:var(--alta-bg); }
+.match-card.alta::before { background:var(--alta); }
+.match-card.media { border-color:var(--media-border); background:var(--media-bg); }
+.match-card.media::before { background:var(--media); }
+.match-card.baja { border-color:var(--baja-border); background:var(--baja-bg); }
+.match-card.baja::before { background:var(--baja); }
+.match-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; }
+.match-name { font-size:17px; font-weight:700; font-family:var(--mono); }
+.alert-badge { font-size:11px; font-weight:700; padding:4px 12px; border-radius:20px; text-transform:uppercase; letter-spacing:1px; }
+.alert-badge.alta { background:var(--alta); color:white; }
+.alert-badge.media { background:var(--media); color:#000; }
+.alert-badge.baja { background:var(--baja); color:white; }
+.match-origin { font-size:12px; color:var(--text-muted); margin-bottom:14px; }
+.scores-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px; }
+.score-item { background:rgba(0,0,0,0.2); border-radius:8px; padding:10px; text-align:center; }
+.score-label { font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px; }
+.score-value { font-family:var(--mono); font-size:20px; font-weight:700; }
+.score-value.high { color:var(--alta); }
+.score-value.mid { color:var(--media); }
+.score-value.low { color:var(--text-secondary); }
+.match-detail-ia { font-size:13px; color:var(--text-secondary); background:rgba(0,0,0,0.15); border-radius:8px; padding:10px 14px; line-height:1.5; border-left:3px solid var(--accent); }
+.match-detail-ia strong { color:var(--accent); }
+.match-method { font-size:11px; color:var(--text-muted); font-family:var(--mono); margin-top:10px; }
+
+.no-results { text-align:center; padding:60px 20px; color:var(--text-muted); }
+.no-results .icon { font-size:48px; margin-bottom:16px; }
+.no-results h3 { font-size:18px; margin-bottom:8px; color:var(--success); }
+.loading { text-align:center; padding:40px; display:none; }
+.loading.active { display:block; }
+.spinner { width:40px; height:40px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 16px; }
+@keyframes spin { to{transform:rotate(360deg);} }
+.loading-text { font-size:14px; color:var(--text-muted); }
+.error-msg { background:var(--alta-bg); border:1px solid var(--alta-border); border-radius:var(--radius); padding:16px; color:var(--alta); font-size:14px; display:none; margin-bottom:16px; }
+.error-msg.active { display:block; }
+
+/* BQ Tables Info */
+.tables-info { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; margin-top:32px; }
+.tables-info h3 { font-size:14px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; }
+.table-tag { display:inline-flex; align-items:center; gap:6px; font-family:var(--mono); font-size:12px; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.2); color:var(--success); padding:6px 12px; border-radius:8px; margin:4px; }
+
+@media (max-width:640px) {
+  .search-row { flex-direction:column; }
+  .scores-grid { grid-template-columns:repeat(2,1fr); }
+  .header { flex-wrap:wrap; }
+  .version-badge { margin-left:0; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-icon">🔍</div>
+    <div><h1>Fraude NomCom</h1><p>Detección de suplantación por nombre comercial</p></div>
+    <span class="version-badge" id="version">v1.1.0</span>
+  </div>
+
+  <!-- Info Panel -->
+  <div class="info-panel">
+    <div class="info-panel-header" onclick="toggleInfo()">
+      <span style="font-size:18px;">ℹ️</span>
+      <h3>¿Cómo funciona? — Guía rápida</h3>
+      <span class="info-panel-toggle" id="infoToggle">▼</span>
+    </div>
+    <div class="info-panel-body" id="infoBody">
+
+      <h4>🔎 Consulta individual (este frontend)</h4>
+      <p>Escribe un nombre comercial en el buscador y presiona <strong>Evaluar</strong>. El sistema lo comparará contra la lista de referencia usando 4 capas de detección: normalización de leetspeak (ej: p3p1t0→PEPITO), similitud sintáctica, semántica y evaluación con IA.</p>
+
+      <h4>⚡ Procesamiento masivo (API batch)</h4>
+      <p>Para activar el análisis de todas las afiliaciones pendientes en BigQuery, consumir el siguiente endpoint:</p>
+      <code class="info-code">POST {BASE_URL}/match/batch
+Content-Type: application/json
+X-Origin: PIPELINE_HUGO
+X-User: tu-email@izipay.pe
+
+{ "source": "bigquery", "use_ia": true, "days_lookback": 3 }</code>
+      <p>Esto lee las afiliaciones de los últimos N días de la tabla de input, ejecuta el matching completo, y guarda todos los resultados en BigQuery automáticamente.</p>
+
+      <h4>📊 Tablas BigQuery donde se guardan los resultados</h4>
+      <p>Cada consulta (individual o batch) queda registrada en BigQuery para análisis posterior:</p>
+      <code class="info-code">-- Resultados del matching (scores, alertas, detalle IA)
+SELECT * FROM `dev-izipay-data-storage.master_party.resultado_analisis_nomcom`
+WHERE fecha_analisis >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
+ORDER BY score_final DESC;
+
+-- Log de consultas (trazabilidad)
+SELECT * FROM `dev-izipay-data-storage.master_party.log_consultas_nomcom`
+ORDER BY fecha_consulta DESC LIMIT 50;</code>
+
+      <h4>🔗 Otros endpoints disponibles</h4>
+      <p>
+        <span class="info-tag">GET /health</span> Estado de la API
+        <span class="info-tag">GET /docs</span> Swagger UI
+        <span class="info-tag">GET /search/history</span> Historial de consultas
+        <span class="info-tag">POST /reference-list/reload</span> Recargar lista de referencia
+      </p>
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-item"><div class="status-dot" id="statusDot"></div><span id="statusText">Conectando...</span></div>
+    <div class="status-item"><span id="refCount">— registros</span></div>
+  </div>
+
+  <div class="search-section">
+    <label class="search-label">Nombre comercial a evaluar</label>
+    <div class="search-row">
+      <input type="text" class="search-input" id="searchInput" placeholder="Ej: zmartf1t, plaza bea, p3p1t0..." autocomplete="off">
+      <button class="btn-search" id="btnSearch" onclick="doSearch()">Evaluar</button>
+    </div>
+    <div class="search-options">
+      <label class="checkbox-label"><input type="checkbox" id="chkIA" checked> Activar capa IA</label>
+      <label class="checkbox-label"><input type="checkbox" id="chkTop5" checked> Solo mejor match</label>
+    </div>
+  </div>
+
+  <div class="error-msg" id="errorMsg"></div>
+  <div class="loading" id="loading"><div class="spinner"></div><div class="loading-text">Analizando nombre comercial...</div></div>
+
+  <div class="results-section" id="resultsSection">
+    <div class="results-header">
+      <span class="results-title" id="resultsTitle"></span>
+      <span class="results-meta" id="resultsMeta"></span>
+    </div>
+    <div class="norm-display">
+      <div><div class="norm-label">Original</div><div id="normOriginal" style="color:var(--text-primary);">—</div></div>
+      <div style="color:var(--text-muted);">→</div>
+      <div><div class="norm-label">Normalizado</div><div class="norm-value" id="normResult">—</div></div>
+    </div>
+    <div id="matchCards"></div>
+  </div>
+
+  <!-- BQ Tables reference -->
+  <div class="tables-info">
+    <h3>📦 Tablas BigQuery</h3>
+    <div>
+      <span class="table-tag">📥 lista_afiliaciones_analizar</span>
+      <span class="table-tag">📋 lista_referencia_nomcom</span>
+      <span class="table-tag">📊 resultado_analisis_nomcom</span>
+      <span class="table-tag">📝 log_consultas_nomcom</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const API = window.location.origin;
+
+// Replace {BASE_URL} in info panel
+document.querySelectorAll('.info-code').forEach(el => {
+  el.textContent = el.textContent.replace('{BASE_URL}', API);
+});
+
+function toggleInfo() {
+  const body = document.getElementById('infoBody');
+  const toggle = document.getElementById('infoToggle');
+  body.classList.toggle('hidden');
+  toggle.classList.toggle('open');
+}
+
+async function checkHealth() {
+  try {
+    const r = await fetch(`${API}/health`);
+    const d = await r.json();
+    document.getElementById('statusDot').classList.remove('offline');
+    document.getElementById('statusText').textContent = 'Motor activo';
+    document.getElementById('refCount').textContent = `${(d.engine?.reference_count||0).toLocaleString()} registros en referencia`;
+    document.getElementById('version').textContent = `v${d.version}`;
+  } catch(e) {
+    document.getElementById('statusDot').classList.add('offline');
+    document.getElementById('statusText').textContent = 'Sin conexión';
+  }
+}
+checkHealth();
+
+document.getElementById('searchInput').addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
+
+async function doSearch() {
+  const name = document.getElementById('searchInput').value.trim();
+  if (!name) return;
+  document.getElementById('btnSearch').disabled = true;
+  document.getElementById('loading').classList.add('active');
+  document.getElementById('resultsSection').classList.remove('active');
+  document.getElementById('errorMsg').classList.remove('active');
+  try {
+    const r = await fetch(`${API}/match`, {
+      method:'POST', headers:{'Content-Type':'application/json','X-Origin':'FRONTEND','X-User':'frontend-user'},
+      body: JSON.stringify({ nombre:name, use_ia:document.getElementById('chkIA').checked, top_n:1 })
+    });
+    if (!r.ok) throw new Error(`Error ${r.status}`);
+    renderResults(await r.json());
+  } catch(e) {
+    document.getElementById('errorMsg').textContent = `Error: ${e.message}`;
+    document.getElementById('errorMsg').classList.add('active');
+  } finally {
+    document.getElementById('btnSearch').disabled = false;
+    document.getElementById('loading').classList.remove('active');
+  }
+}
+
+function renderResults(data) {
+  document.getElementById('resultsSection').classList.add('active');
+  document.getElementById('normOriginal').textContent = data.nombre_consultado;
+  document.getElementById('normResult').textContent = data.nombre_normalizado;
+  document.getElementById('resultsTitle').textContent = data.total_matches > 0
+    ? `${data.total_matches} coincidencia${data.total_matches>1?'s':''} detectada${data.total_matches>1?'s':''}`
+    : 'Sin coincidencias';
+  document.getElementById('resultsMeta').textContent = `${data.tiempo_ms}ms`;
+  const c = document.getElementById('matchCards');
+  if (!data.total_matches) {
+    c.innerHTML = `<div class="no-results"><div class="icon">✅</div><h3>Sin coincidencias</h3><p>El nombre no presenta similitud con la lista de referencia.</p></div>`;
+    return;
+  }
+  c.innerHTML = data.matches.map(m => {
+    const cls = m.nivel_alerta.toLowerCase();
+    const sc = v => v>=0.9?'high':v>=0.7?'mid':'low';
+    return `<div class="match-card ${cls}">
+      <div class="match-top"><div class="match-name">${esc(m.nombre_referencia_match)}</div><span class="alert-badge ${cls}">${m.nivel_alerta}</span></div>
+      <div class="match-origin">Origen: ${esc(m.origen_referencia)}</div>
+      <div class="scores-grid">
+        <div class="score-item"><div class="score-label">Sintáctico</div><div class="score-value ${sc(m.score_sintactico)}">${(m.score_sintactico*100).toFixed(0)}%</div></div>
+        <div class="score-item"><div class="score-label">Semántico</div><div class="score-value ${sc(m.score_semantico)}">${(m.score_semantico*100).toFixed(0)}%</div></div>
+        <div class="score-item"><div class="score-label">IA</div><div class="score-value ${sc(m.score_ia)}">${m.score_ia>0?(m.score_ia*100).toFixed(0)+'%':'—'}</div></div>
+        <div class="score-item"><div class="score-label">Final</div><div class="score-value ${sc(m.score_final)}">${(m.score_final*100).toFixed(0)}%</div></div>
+      </div>
+      ${m.detalle_ia?`<div class="match-detail-ia"><strong>IA:</strong> ${esc(m.detalle_ia)}</div>`:''}
+      <div class="match-method">Método: ${esc(m.metodo_deteccion)}</div>
+    </div>`;
+  }).join('');
+}
+function esc(s){return s?s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'):''}
+</script>
+</body>
+</html>

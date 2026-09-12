@@ -1,0 +1,62 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  annotations:
+    run.googleapis.com/ingress: all
+    run.googleapis.com/ingress-status: all
+    run.googleapis.com/maxScale: '100'
+    run.googleapis.com/urls: '["https://fraude-quality-gate-322392286721.us-central1.run.app","https://fraude-quality-gate-dl7olq7kiq-uc.a.run.app"]'
+  labels:
+    cloud.googleapis.com/location: us-central1
+  name: fraude-quality-gate
+  namespace: '322392286721'
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: '2'
+        run.googleapis.com/client-name: gcloud
+        run.googleapis.com/client-version: 564.0.0
+        run.googleapis.com/startup-cpu-boost: 'true'
+      labels:
+        client.knative.dev/nonce: cjjzwujjio
+        run.googleapis.com/startupProbeType: Default
+    spec:
+      containerConcurrency: 80
+      containers:
+      - env:
+        - name: BQ_PROJECT
+          value: dev-izipay-advanced-analytics
+        - name: BQ_DATASET
+          value: raw_riesgo_operativo
+        - name: GPT51_ENDPOINT
+          value: https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com
+        - name: GPT51_API_KEY
+          value: <<AZURE_OPENAI_API_KEY>>
+        - name: GPT51_DEPLOYMENT
+          value: gpt-5.1-chat
+        - name: COMPARATOR_V6_URL
+          value: https://fraude-comparador-v6-dl7olq7kiq-uc.a.run.app
+        - name: PRECISION_THRESHOLD
+          value: '0.7'
+        - name: F1_THRESHOLD
+          value: '0.6'
+        image: us-central1-docker.pkg.dev/dev-izipay-advanced-analytics/backoffice-api/fraude-quality-gate:v6.0
+        ports:
+        - containerPort: 8080
+          name: http1
+        resources:
+          limits:
+            cpu: '1'
+            memory: 1Gi
+        startupProbe:
+          failureThreshold: 1
+          periodSeconds: 240
+          tcpSocket:
+            port: 8080
+          timeoutSeconds: 240
+      serviceAccountName: dev-izipay-iexpress-api-segmen@dev-izipay-advanced-analytics.iam.gserviceaccount.com
+      timeoutSeconds: 900
+  traffic:
+  - latestRevision: true
+    percent: 100

@@ -1,0 +1,303 @@
+"""
+Fraude NomCom - Comparador v5.3
+CAMBIOS vs v5.1:
+- NUEVO endpoint POST /compare-json que acepta records en JSON directo
+  (elimina la necesidad de serializar/deserializar Excel ~45 min)
+- El endpoint Excel /upload-and-compare se mantiene intacto (compat frontend)
+- engine.py sin cambios — motor IA Junta Médica intacto
+"""
+import os, io, csv, logging, threading
+from datetime import datetime
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Body
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, StreamingResponse
+from pydantic import BaseModel, Field
+from typing import List, Optional
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
+logger = logging.getLogger("api")
+VERSION = "5.3.0"
+
+DB_HOST = os.environ.get("DB_HOST", "<<DB_HOST>>")
+DB_PORT = os.environ.get("DB_PORT", "5432")
+DB_NAME = os.environ.get("DB_NAME", "backoffice_test")
+DB_USER = os.environ.get("DB_USER", "postgres")
+DB_PASS = os.environ.get("DB_PASSWORD", "<<DB_PASSWORD>>")
+DB_URL = f"host={DB_HOST} port={DB_PORT} dbname={DB_NAME} user={DB_USER} password={DB_PASS}"
+
+app = FastAPI(title="Fraude Comparador", version=VERSION)
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+from engine import ComparisonEngine
+engine = ComparisonEngine(DB_URL)
+
+@app.on_event("startup")
+def startup():
+    try:
+        engine.init_db()
+    except Exception as e:
+        logger.error(f"DB init error: {e}")
+
+@app.get("/")
+def root():
+    return FileResponse("static/index.html")
+
+@app.get("/health")
+def health():
+    return {"status":"ok","version":VERSION,"ia_enabled":engine.ai_enabled,"json_api":True}
+
+# ═════════════════════════════════════════════════════════════════════
+# PARSERS DE EXCEL/CSV (flujo legacy — frontend web Excel upload)
+# ═════════════════════════════════════════════════════════════════════
+
+def parse_excel(file_bytes, filename):
+    import openpyxl
+    wb = openpyxl.load_workbook(io.BytesIO(file_bytes), read_only=True, data_only=True)
+    ws = wb.active
+    rows = list(ws.iter_rows(values_only=True))
+    wb.close()
+    if not rows: return []
+    headers = [str(h).strip().lower() if h else f"col{i}" for i,h in enumerate(rows[0])]
+    cm = {"nombre":-1,"codigo":-1,"ruc":-1,"razon_social":-1}
+    for i,h in enumerate(headers):
+        for v in ["nombre comercial","nom_comercio","nombre_comercio","nombre comercio","comercio","name","nombre"]:
+            if v in h and cm["nombre"]==-1: cm["nombre"]=i; break
+        for v in ["razon social","razon_social"]:
+            if v in h and cm["razon_social"]==-1: cm["razon_social"]=i
+        for v in ["dni/ruc","dniruc","ruc","nro_ruc","num_ruc"]:
+            if v in h and cm["ruc"]==-1: cm["ruc"]=i
+        for v in ["cod_comercio","codigo_comercio","codigo","code"]:
+            if v in h and cm["codigo"]==-1: cm["codigo"]=i
+    if cm["nombre"]==-1:
+        cm["nombre"] = cm["razon_social"] if cm["razon_social"]>=0 else 0
+    logger.info(f"Columns: {cm} from {headers}")
+    records = []
+    for row in rows[1:]:
+        if not row or len(row)<=cm["nombre"]: continue
+        nombre = str(row[cm["nombre"]]).strip() if row[cm["nombre"]] else ""
+        if not nombre or nombre.lower() in ("none","null","nan",""): continue
+        cod = str(row[cm["codigo"]]).strip() if cm["codigo"]>=0 and len(row)>cm["codigo"] and row[cm["codigo"]] else ""
+        ruc = ""
+        if cm["ruc"]>=0 and len(row)>cm["ruc"] and row[cm["ruc"]]:
+            ruc = str(int(row[cm["ruc"]])).strip() if isinstance(row[cm["ruc"]],(int,float)) else str(row[cm["ruc"]]).strip()
+        razon = str(row[cm["razon_social"]]).strip() if cm["razon_social"]>=0 and len(row)>cm["razon_social"] and row[cm["razon_social"]] else ""
+        records.append({"nombre":nombre,"nom_comercio":nombre,"cod_comercio":cod,"ruc":ruc,"razon_social":razon})
+    return records
+
+def parse_csv_file(file_bytes):
+    text = file_bytes.decode("utf-8",errors="replace")
+    sep = next((s for s in [";",",","\t","|"] if s in text.split("\n")[0]), ",")
+    reader = csv.DictReader(io.StringIO(text), delimiter=sep)
+    records = []
+    for row in reader:
+        nombre=codigo=ruc=razon=""
+        for k,v in row.items():
+            kl=k.strip().lower()
+            if any(x in kl for x in ["nom_comercio","nombre","comercio"]): nombre=str(v).strip()
+            if any(x in kl for x in ["cod_comercio","codigo","code"]): codigo=str(v).strip()
+            if any(x in kl for x in ["ruc","nro_ruc","dni"]): ruc=str(v).strip()
+            if any(x in kl for x in ["razon"]): razon=str(v).strip()
+        if not nombre:
+            vals=list(row.values()); nombre=str(vals[0]).strip() if vals else ""
+        if nombre and nombre.lower() not in ("none","null","nan"):
+            records.append({"nombre":nombre,"nom_comercio":nombre,"cod_comercio":codigo,"ruc":ruc,"razon_social":razon})
+    return records
+
+def parse_file(content, filename):
+    fl = filename.lower()
+    if fl.endswith((".xlsx",".xls")): return parse_excel(content,filename)
+    if fl.endswith(".csv"): return parse_csv_file(content)
+    raise HTTPException(400, "Formato no soportado")
+
+def worker_thread(job_id):
+    try:
+        engine.run_comparison(job_id)
+    except Exception as e:
+        logger.error(f"Worker FAIL {job_id}: {e}", exc_info=True)
+        engine._update_job(job_id, status="error", error_msg=str(e)[:500], phase="Error")
+
+# ═════════════════════════════════════════════════════════════════════
+# ENDPOINT LEGACY — Excel upload (frontend web, queda intacto)
+# ═════════════════════════════════════════════════════════════════════
+
+@app.post("/upload-and-compare")
+async def upload_and_compare(
+    referencia: UploadFile=File(...), afiliaciones: UploadFile=File(...),
+    use_ia: bool=Form(False), threshold: float=Form(0.40), ia_threshold: float=Form(0.30)):
+    ref_records = parse_file(await referencia.read(), referencia.filename)
+    afil_records = parse_file(await afiliaciones.read(), afiliaciones.filename)
+    if not ref_records: raise HTTPException(400,"Referencia vacía")
+    if not afil_records: raise HTTPException(400,"Afiliaciones vacía")
+    job_id = engine.create_job(use_ia, threshold, ia_threshold)
+    n_ref = engine.save_referencia(job_id, ref_records)
+    n_afil = engine.save_afiliaciones(job_id, afil_records)
+    t = threading.Thread(target=worker_thread, args=(job_id,), daemon=True)
+    t.start()
+    return {"job_id":job_id,"status":"processing","referencia":n_ref,"afiliaciones":n_afil}
+
+# ═════════════════════════════════════════════════════════════════════
+# ENDPOINT NUEVO v5.3 — JSON directo (10x más rápido que Excel)
+# ═════════════════════════════════════════════════════════════════════
+
+class AfiliacionRecord(BaseModel):
+    cod_comercio: str = Field("")
+    nom_comercio: str
+    ruc: Optional[str] = Field("")
+    razon_social: Optional[str] = Field("")
+
+class ReferenciaRecord(BaseModel):
+    nombre: str
+    ruc: Optional[str] = Field("")
+    razon_social: Optional[str] = Field("")
+    cod_comercio: Optional[str] = Field("")
+
+class CompareRequest(BaseModel):
+    afiliaciones: List[AfiliacionRecord]
+    referencia: List[ReferenciaRecord]
+    use_ia: bool = True
+    threshold: float = 0.40
+    ia_threshold: float = 0.30
+
+@app.post("/compare-json")
+async def compare_json(payload: CompareRequest):
+    """
+    v5.3 — Recibe afiliaciones y referencia en JSON directo (sin Excel).
+    Usa la misma lógica del motor Junta Médica, solo salta la capa de parseo Excel.
+    """
+    if not payload.afiliaciones:
+        raise HTTPException(400, "afiliaciones vacío")
+    if not payload.referencia:
+        raise HTTPException(400, "referencia vacío")
+
+    logger.info(f"JSON compare: {len(payload.afiliaciones)} afil vs {len(payload.referencia)} ref — IA={payload.use_ia}")
+
+    # Convertir a dicts para reutilizar save_*
+    ref_records = [
+        {"nombre": r.nombre, "nom_comercio": r.nombre,
+         "ruc": r.ruc or "", "razon_social": r.razon_social or "",
+         "cod_comercio": r.cod_comercio or ""}
+        for r in payload.referencia if r.nombre and r.nombre.strip()
+    ]
+    afil_records = [
+        {"nombre": a.nom_comercio, "nom_comercio": a.nom_comercio,
+         "cod_comercio": a.cod_comercio or "",
+         "ruc": a.ruc or "", "razon_social": a.razon_social or ""}
+        for a in payload.afiliaciones if a.nom_comercio and a.nom_comercio.strip()
+    ]
+
+    if not ref_records:
+        raise HTTPException(400, "referencia sin registros válidos")
+    if not afil_records:
+        raise HTTPException(400, "afiliaciones sin registros válidos")
+
+    job_id = engine.create_job(payload.use_ia, payload.threshold, payload.ia_threshold)
+    n_ref = engine.save_referencia(job_id, ref_records)
+    n_afil = engine.save_afiliaciones(job_id, afil_records)
+
+    t = threading.Thread(target=worker_thread, args=(job_id,), daemon=True)
+    t.start()
+
+    return {
+        "job_id": job_id,
+        "status": "processing",
+        "referencia": n_ref,
+        "afiliaciones": n_afil,
+        "api": "json_v5.3"
+    }
+
+# ═════════════════════════════════════════════════════════════════════
+# Resto de endpoints (sin cambios)
+# ═════════════════════════════════════════════════════════════════════
+
+@app.get("/status/{job_id}")
+def job_status(job_id: str):
+    j = engine.get_job(job_id)
+    if not j: raise HTTPException(404,"Job no encontrado")
+    return {
+        "job_id":j["job_id"],"status":j["status"],"phase":j.get("phase",""),
+        "total":j["total_afiliaciones"],"processed":j["processed"],
+        "matches_total":j["matches_total"],"matches_alta":j["matches_alta"],
+        "matches_media":j["matches_media"],"matches_baja":j["matches_baja"],
+        "elapsed_ms":j["elapsed_ms"],"speed":j.get("speed_per_sec",0),
+        "eta":j.get("eta_seconds",0),"ia_evaluated":j.get("ia_evaluated",0),
+        "ia_total":j.get("ia_total",0),"error":j.get("error_msg",""),
+    }
+
+@app.post("/cancel/{job_id}")
+def cancel_job(job_id: str):
+    j = engine.get_job(job_id)
+    if not j: raise HTTPException(404,"Job no encontrado")
+    if j["status"] not in ("processing","queued"):
+        raise HTTPException(400, f"Job en estado {j['status']}, no se puede cancelar")
+    engine.cancel_job(job_id)
+    return {"status":"cancel_requested","job_id":job_id}
+
+@app.get("/results/{job_id}")
+def job_results(job_id: str, limit: int=1000):
+    j = engine.get_job(job_id)
+    if not j: raise HTTPException(404)
+    results = engine.get_results(job_id, limit)
+    for r in results:
+        for k,v in r.items():
+            if hasattr(v,'isoformat'): r[k]=v.isoformat()
+    return {"status":j["status"],"total_evaluados":j["total_afiliaciones"],
+            "matches":len(results),"elapsed_ms":j["elapsed_ms"],"results":results}
+
+@app.get("/download/{job_id}")
+def download_xlsx(job_id: str):
+    from openpyxl import Workbook
+    from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+    from openpyxl.utils import get_column_letter
+
+    j = engine.get_job(job_id)
+    if not j: raise HTTPException(404)
+    results = engine.get_results(job_id, 50000)
+    wb = Workbook()
+    ws_res = wb.active; ws_res.title = "Resumen"
+    fn = Font(name="Arial",size=10); fb = Font(name="Arial",size=11,bold=True)
+    ws_res.column_dimensions["A"].width = 28; ws_res.column_dimensions["B"].width = 18
+    data = [("FRAUDE NOMCOM — RESULTADOS",""),("",""),
+            ("Job ID",j["job_id"]),("Fecha",str(j.get("created_at",""))[:19]),
+            ("Total Afiliaciones",j["total_afiliaciones"]),("Total Referencia",j["total_referencia"]),
+            ("",""),("RESULTADOS",""),("Total Matches",j["matches_total"]),
+            ("ALTA",j["matches_alta"]),("MEDIA",j["matches_media"]),("BAJA",j["matches_baja"]),
+            ("Tiempo (seg)",round(j["elapsed_ms"]/1000,1)),("IA Utilizada","Sí" if j["use_ia"] else "No")]
+    for i,(l,v) in enumerate(data,1):
+        ws_res.cell(i,1,l).font=fn; ws_res.cell(i,2,v).font=fb
+
+    ws = wb.create_sheet("Detalle Alertas")
+    ca=["#","Cod Comercio","Nombre Comercial","Normalizado","DNI/RUC","Razón Social"]
+    cr=["Match Referencia","RUC Referencia","Origen"]
+    ci=["Score Sintác","Score Semánt","Score Fuzzy","Score IA","Score Final","Nivel Alerta","Método","Detalle IA"]
+    all_c=ca+cr+ci
+    for i,h in enumerate(all_c,1):
+        ws.cell(1,i,h).font=Font(bold=True)
+    for idx,r in enumerate(results):
+        row=idx+2
+        avals=[idx+1,r.get("cod_comercio",""),r.get("nom_comercio",""),r.get("nom_comercio_norm",""),
+               r.get("ruc_afiliacion",""),r.get("razon_social","") or ""]
+        for j2,v in enumerate(avals):
+            ws.cell(row,j2+1,v)
+        rvals=[r.get("nombre_referencia_match",""),r.get("ruc_referencia",""),r.get("origen_referencia","")]
+        for j2,v in enumerate(rvals):
+            ws.cell(row,len(ca)+j2+1,v)
+        ivals=[r.get("score_sintactico",0),r.get("score_semantico",0),r.get("score_fuzzy",0),
+               r.get("score_ia",0),r.get("score_final",0),r.get("nivel_alerta",""),r.get("metodo_deteccion",""),r.get("detalle_ia","")]
+        for j2,v in enumerate(ivals):
+            ws.cell(row,len(ca)+len(cr)+j2+1,v)
+
+    buf=io.BytesIO(); wb.save(buf); buf.seek(0)
+    return StreamingResponse(buf,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition":f"attachment; filename=FRAUDE_ALERTAS_{job_id}.xlsx"})
+
+@app.get("/jobs")
+def list_jobs():
+    jobs = engine.list_jobs()
+    for j in jobs:
+        for k,v in j.items():
+            if hasattr(v,'isoformat'): j[k]=v.isoformat()
+    return {"jobs":jobs}
+
+if __name__=="__main__":
+    import uvicorn; uvicorn.run(app,host="0.0.0.0",port=8080)

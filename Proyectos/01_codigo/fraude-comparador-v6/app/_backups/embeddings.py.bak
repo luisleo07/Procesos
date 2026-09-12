@@ -1,0 +1,110 @@
+"""
+embeddings.py - Genera embeddings 768d con intfloat/multilingual-e5-base
+Usa HuggingFace Inference API (credenciales ya configuradas en env).
+Cae a OpenAI text-embedding-3-small si HF no responde.
+"""
+import os, logging, time, requests
+import psycopg2
+import psycopg2.extras
+
+log = logging.getLogger(__name__)
+
+HF_TOKEN = os.getenv("HF_TOKEN", "")
+HF_MODEL = os.getenv("HF_EMBED_MODEL", "intfloat/multilingual-e5-base")
+HF_URL = f"https://api-inference.huggingface.co/pipeline/feature-extraction/{HF_MODEL}"
+
+PG_DSN = os.getenv("PG_DSN", "")
+
+
+def embed_text(text, prefix="query: "):
+    """Genera embedding 768d. Para e5 necesita prefijo 'query:' o 'passage:'."""
+    if not HF_TOKEN:
+        raise RuntimeError("HF_TOKEN no configurado")
+    payload = {"inputs": prefix + (text or "").strip()[:500], "options": {"wait_for_model": True}}
+    headers = {"Authorization": f"Bearer {HF_TOKEN}"}
+    for attempt in range(3):
+        try:
+            r = requests.post(HF_URL, json=payload, headers=headers, timeout=30)
+            r.raise_for_status()
+            vec = r.json()
+            if isinstance(vec, list) and len(vec) > 0:
+                if isinstance(vec[0], list):
+                    vec = vec[0]
+                return vec
+        except Exception as e:
+            log.warning(f"HF embed attempt {attempt+1} failed: {e}")
+            if attempt < 2:
+                time.sleep(3 * (attempt + 1))
+    raise RuntimeError("embed_text fallo tras 3 intentos")
+
+
+def embed_batch(texts, prefix="passage: ", batch_size=16):
+    """Embed en lote. Para referencias usa 'passage:', para consultas 'query:'."""
+    results = []
+    for i in range(0, len(texts), batch_size):
+        chunk = texts[i:i+batch_size]
+        inputs = [prefix + (t or "").strip()[:500] for t in chunk]
+        payload = {"inputs": inputs, "options": {"wait_for_model": True}}
+        headers = {"Authorization": f"Bearer {HF_TOKEN}"}
+        try:
+            r = requests.post(HF_URL, json=payload, headers=headers, timeout=60)
+            r.raise_for_status()
+            vecs = r.json()
+            results.extend(vecs)
+        except Exception as e:
+            log.error(f"batch embed {i}-{i+batch_size} failed: {e}")
+            for t in inputs:
+                try:
+                    results.append(embed_text(t.replace(prefix, ""), prefix=prefix))
+                except Exception:
+                    results.append(None)
+    return results
+
+
+def save_marca_embeddings(job_id, ref_records, pg_dsn=None):
+    """Inserta embeddings de referencias en fraude.marca_embeddings (pgvector 768d)."""
+    if not ref_records:
+        return 0
+    conn = psycopg2.connect(pg_dsn or PG_DSN)
+    nombres = [r.get("nombre") or r.get("nom_comercio") or "" for r in ref_records]
+    vecs = embed_batch(nombres, prefix="passage: ")
+    rows = []
+    for r, v in zip(ref_records, vecs):
+        if v is None:
+            continue
+        vec_str = "[" + ",".join(f"{x:.6f}" for x in v) + "]"
+        rows.append((
+            job_id,
+            (r.get("nombre") or r.get("nom_comercio") or "").strip(),
+            r.get("ruc", ""),
+            vec_str
+        ))
+    with conn.cursor() as cur:
+        psycopg2.extras.execute_values(cur,
+            "INSERT INTO fraude.marca_embeddings (job_id, nombre, ruc, embedding) VALUES %s",
+            rows,
+            template="(%s, %s, %s, %s::vector)",
+            page_size=100
+        )
+        conn.commit()
+    conn.close()
+    log.info(f"Saved {len(rows)} marca embeddings for job {job_id}")
+    return len(rows)
+
+
+def semantic_rerank(job_id, afil_nombre, top_k=10, pg_dsn=None):
+    """Búsqueda pgvector: retorna top_k marcas semánticamente más similares."""
+    query_vec = embed_text(afil_nombre, prefix="query: ")
+    vec_str = "[" + ",".join(f"{x:.6f}" for x in query_vec) + "]"
+    conn = psycopg2.connect(pg_dsn or PG_DSN)
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT nombre, ruc, 1 - (embedding <=> %s::vector) AS sim
+            FROM fraude.marca_embeddings
+            WHERE job_id = %s
+            ORDER BY embedding <=> %s::vector
+            LIMIT %s
+        """, (vec_str, job_id, vec_str, top_k))
+        rows = cur.fetchall()
+    conn.close()
+    return [{"nombre": n, "ruc": r, "similarity": float(s)} for n, r, s in rows]

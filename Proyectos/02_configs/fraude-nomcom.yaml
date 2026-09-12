@@ -1,0 +1,79 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  annotations:
+    run.googleapis.com/ingress: all
+    run.googleapis.com/ingress-status: all
+    run.googleapis.com/maxScale: '100'
+    run.googleapis.com/urls: '["https://fraude-nomcom-322392286721.us-central1.run.app","https://fraude-nomcom-dl7olq7kiq-uc.a.run.app"]'
+  labels:
+    cloud.googleapis.com/location: us-central1
+  name: fraude-nomcom
+  namespace: '322392286721'
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: '3'
+        autoscaling.knative.dev/minScale: '1'
+        run.googleapis.com/client-name: gcloud
+        run.googleapis.com/client-version: 560.0.0
+        run.googleapis.com/startup-cpu-boost: 'true'
+      labels:
+        client.knative.dev/nonce: vcobeiiddc
+        run.googleapis.com/startupProbeType: Default
+    spec:
+      containerConcurrency: 20
+      containers:
+      - env:
+        - name: DB_HOST
+          value: <<DB_HOST>>
+        - name: DB_PORT
+          value: '5432'
+        - name: DB_NAME
+          value: backoffice_test
+        - name: DB_USER
+          value: postgres
+        - name: DB_PASSWORD
+          value: <<DB_PASSWORD>>
+        - name: BQ_PROJECT
+          value: dev-izipay-data-storage
+        - name: BQ_DATASET
+          value: master_party
+        - name: BQ_TABLE_REF
+          value: lista_referencia_nomcom
+        - name: BQ_TABLE_AFIL
+          value: lista_afiliaciones_analizar
+        - name: BQ_TABLE_RESULT
+          value: resultado_analisis_nomcom
+        - name: BQ_TABLE_LOG
+          value: log_consultas_nomcom
+        - name: SYNC_INTERVAL_SECONDS
+          value: '1800'
+        - name: AZURE_OPENAI_ENDPOINT
+          value: https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com
+        - name: AZURE_OPENAI_API_KEY
+          value: <<AZURE_OPENAI_API_KEY>>
+        - name: AZURE_OPENAI_API_VERSION
+          value: 2025-01-01-preview
+        - name: AZURE_OPENAI_MODEL
+          value: gpt-4.1
+        image: us-central1-docker.pkg.dev/dev-izipay-advanced-analytics/backoffice-api/fraude-nomcom:latest
+        ports:
+        - containerPort: 8080
+          name: http1
+        resources:
+          limits:
+            cpu: '4'
+            memory: 8Gi
+        startupProbe:
+          failureThreshold: 1
+          periodSeconds: 240
+          tcpSocket:
+            port: 8080
+          timeoutSeconds: 240
+      serviceAccountName: dev-izipay-iexpress-api-segmen@dev-izipay-advanced-analytics.iam.gserviceaccount.com
+      timeoutSeconds: 600
+  traffic:
+  - latestRevision: true
+    percent: 100

@@ -1,0 +1,72 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  annotations:
+    run.googleapis.com/ingress: all
+    run.googleapis.com/ingress-status: all
+    run.googleapis.com/maxScale: '100'
+    run.googleapis.com/urls: '["https://fraude-comparador-322392286721.us-central1.run.app","https://fraude-comparador-dl7olq7kiq-uc.a.run.app"]'
+  labels:
+    cloud.googleapis.com/location: us-central1
+  name: fraude-comparador
+  namespace: '322392286721'
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: '3'
+        autoscaling.knative.dev/minScale: '1'
+        run.googleapis.com/client-name: gcloud
+        run.googleapis.com/client-version: 564.0.0
+        run.googleapis.com/cpu-throttling: 'false'
+        run.googleapis.com/startup-cpu-boost: 'true'
+      labels:
+        client.knative.dev/nonce: vjdakhghgl
+        run.googleapis.com/startupProbeType: Default
+    spec:
+      containerConcurrency: 10
+      containers:
+      - env:
+        - name: DB_HOST
+          value: <<DB_HOST>>
+        - name: DB_PORT
+          value: '5432'
+        - name: DB_NAME
+          value: backoffice_test
+        - name: DB_USER
+          value: postgres
+        - name: DB_PASSWORD
+          value: <<DB_PASSWORD>>
+        - name: AZURE_OPENAI_ENDPOINT
+          value: https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com
+        - name: AZURE_OPENAI_API_KEY
+          value: <<AZURE_OPENAI_API_KEY>>
+        - name: AZURE_OPENAI_API_VERSION
+          value: 2024-12-01-preview
+        - name: AZURE_OPENAI_MODEL
+          value: gpt-5.1-chat
+        - name: RESTART_MARKER
+          value: '1776950997'
+        - name: RESTART_KILL
+          value: '1776951561'
+        - name: KILL
+          value: '1776952429'
+        image: us-central1-docker.pkg.dev/dev-izipay-advanced-analytics/backoffice-api/fraude-comparador:v5.5.0
+        ports:
+        - containerPort: 8080
+          name: http1
+        resources:
+          limits:
+            cpu: '4'
+            memory: 4Gi
+        startupProbe:
+          failureThreshold: 1
+          periodSeconds: 240
+          tcpSocket:
+            port: 8080
+          timeoutSeconds: 240
+      serviceAccountName: dev-izipay-iexpress-api-segmen@dev-izipay-advanced-analytics.iam.gserviceaccount.com
+      timeoutSeconds: 3600
+  traffic:
+  - latestRevision: true
+    percent: 100

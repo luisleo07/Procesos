@@ -1,0 +1,80 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  annotations:
+    run.googleapis.com/ingress: all
+    run.googleapis.com/ingress-status: all
+    run.googleapis.com/maxScale: '100'
+    run.googleapis.com/urls: '["https://fraude-traza-322392286721.us-central1.run.app","https://fraude-traza-dl7olq7kiq-uc.a.run.app"]'
+  labels:
+    cloud.googleapis.com/location: us-central1
+  name: fraude-traza
+  namespace: '322392286721'
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: '3'
+        run.googleapis.com/client-name: gcloud
+        run.googleapis.com/client-version: 566.0.0
+        run.googleapis.com/startup-cpu-boost: 'true'
+      labels:
+        client.knative.dev/nonce: fqroldjprn
+        run.googleapis.com/startupProbeType: Default
+    spec:
+      containerConcurrency: 80
+      containers:
+      - env:
+        - name: PG_DSN
+          value: host=<<DB_HOST>> dbname=backoffice_test user=postgres password=<<DB_PASSWORD>>
+        - name: COMPARADOR_URL
+          value: https://fraude-comparador-dl7olq7kiq-uc.a.run.app
+        - name: FRAUDE_JOB_TIMEOUT
+          value: '3000'
+        - name: COMPARADOR_TIMEOUT
+          value: '3000'
+        - name: FRAUDE_API_URL
+          value: https://fraude-comparador-322392286721.us-central1.run.app
+        - name: JOB_POLL_TIMEOUT
+          value: '2400'
+        - name: BQ_BATCH_SIZE
+          value: '200'
+        - name: RESTART_MARKER
+          value: '1776944152'
+        - name: KILL_MARKER
+          value: '1776948694'
+        - name: MAX_AFIL_BATCH
+          value: '5000'
+        - name: MAX_REF_BATCH
+          value: '5000'
+        - name: WATCHDOG_SEC
+          value: '1800'
+        - name: HTTP_TIMEOUT_UPLOAD
+          value: '300'
+        - name: BQ_DATA_PROJECT
+          value: dev-izipay-data-storage
+        - name: BQ_JOB_PROJECT
+          value: dev-izipay-data-storage
+        - name: BQ_DATASET
+          value: raw_riesgo_operativo
+        - name: BQ_DATASET_OUTPUT
+          value: raw_riesgo_operativo
+        image: us-central1-docker.pkg.dev/dev-izipay-advanced-analytics/backoffice-api/fraude-traza:v2.0.6
+        ports:
+        - containerPort: 8080
+          name: http1
+        resources:
+          limits:
+            cpu: '2'
+            memory: 2Gi
+        startupProbe:
+          failureThreshold: 1
+          periodSeconds: 240
+          tcpSocket:
+            port: 8080
+          timeoutSeconds: 240
+      serviceAccountName: dev-izipay-iexpress-api-segmen@dev-izipay-advanced-analytics.iam.gserviceaccount.com
+      timeoutSeconds: 3600
+  traffic:
+  - latestRevision: true
+    percent: 100

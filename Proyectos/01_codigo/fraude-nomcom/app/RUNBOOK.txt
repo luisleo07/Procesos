@@ -1,0 +1,113 @@
+══════════════════════════════════════════════════════════
+RUNBOOK — Fraude NomCom API v1.0
+Detección de fraude por nombre comercial — Izipay
+══════════════════════════════════════════════════════════
+
+ARQUITECTURA
+────────────
+- FastAPI (Python 3.11) en Cloud Run
+- BigQuery: tablas de referencia, afiliaciones, resultados
+- PostgreSQL: log de consultas (traza)
+- Azure OpenAI (gpt-4.1): capa IA para zona gris
+- Motor de matching: Normalización → Sintáctica → Semántica → IA
+
+TABLAS BIGQUERY (dev-izipay-data-storage.master_party)
+──────────────────────────────────────────────────────
+1. lista_referencia_nomcom      → Lista contra la que se compara (Hugo actualiza)
+2. lista_afiliaciones_analizar  → Afiliaciones nuevas a evaluar (Hugo alimenta)
+3. resultado_analisis_nomcom    → Output del matching (la API escribe)
+4. log_consultas_nomcom         → Traza de consultas (la API escribe)
+
+TABLA POSTGRESQL (backoffice_test)
+──────────────────────────────────
+- log_consultas_nomcom → Traza rápida para queries del frontend
+
+ENDPOINTS
+─────────
+POST /match                   → Evaluar un nombre individual
+POST /match/batch             → Evaluar lote (desde BigQuery o inline)
+GET  /search/history          → Consultar historial de búsquedas
+POST /reference-list/reload   → Forzar recarga de lista de referencia
+GET  /health                  → Healthcheck
+GET  /engine/stats            → Estado del motor
+GET  /                        → Frontend web
+GET  /docs                    → Swagger UI
+
+DEPLOY COMPLETO (primera vez)
+─────────────────────────────
+cd ~ && unzip -o fraude_nomcom_deploy.zip && cd fraude_nomcom_deploy
+chmod +x deploy.sh
+bash deploy.sh
+
+DEPLOY RÁPIDO (solo actualizar código)
+──────────────────────────────────────
+cd ~/fraude_nomcom_deploy
+docker build --no-cache --platform linux/amd64 \
+  -t us-central1-docker.pkg.dev/dev-izipay-advanced-analytics/backoffice-api/fraude-nomcom:latest .
+docker push us-central1-docker.pkg.dev/dev-izipay-advanced-analytics/backoffice-api/fraude-nomcom:latest
+gcloud run deploy fraude-nomcom \
+  --image=us-central1-docker.pkg.dev/dev-izipay-advanced-analytics/backoffice-api/fraude-nomcom:latest \
+  --platform=managed --region=us-central1 \
+  --project=dev-izipay-advanced-analytics --quiet
+
+PROBAR LOCALMENTE
+─────────────────
+cd ~/fraude_nomcom_deploy
+pip install -r requirements.txt
+# Sin BigQuery (usa datos de prueba en memoria):
+uvicorn main:app --host 0.0.0.0 --port 8080 --reload
+# Abrir: http://localhost:8080
+
+PROBAR API CON CURL
+───────────────────
+# Match individual
+curl -X POST http://localhost:8080/match \
+  -H "Content-Type: application/json" \
+  -d '{"nombre": "zmartf1t", "use_ia": false}'
+
+# Match batch inline
+curl -X POST http://localhost:8080/match/batch \
+  -H "Content-Type: application/json" \
+  -d '{"source":"inline","items":[{"cod_comercio":"T1","nom_comercio":"PLAZ4 VEA"},{"cod_comercio":"T2","nom_comercio":"P3P1T0"}],"use_ia":false}'
+
+# Historial
+curl http://localhost:8080/search/history?limit=10
+
+# Healthcheck
+curl http://localhost:8080/health
+
+HEADERS OPCIONALES
+──────────────────
+X-Origin: FRONTEND | BATCH | API_EXTERNA | PIPELINE_HUGO
+X-User:   email o identificador del sistema que llama
+
+CONFIGURACIÓN (env vars en Cloud Run)
+─────────────────────────────────────
+DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD  → PostgreSQL
+BQ_PROJECT, BQ_DATASET                            → BigQuery
+BQ_TABLE_REF, BQ_TABLE_AFIL, BQ_TABLE_RESULT     → Tablas BQ
+SYNC_INTERVAL_SECONDS                             → Intervalo sync (default 1800)
+AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_API_KEY       → Azure OpenAI
+AZURE_OPENAI_API_VERSION, AZURE_OPENAI_MODEL      → Modelo IA
+
+FLUJO DE HUGO (pipeline)
+────────────────────────
+1. Su pipeline alimenta lista_afiliaciones_analizar en BigQuery
+2. Su pipeline actualiza lista_referencia_nomcom cuando cambie
+3. La API detecta el cambio automáticamente cada 30 min
+4. Hugo puede llamar POST /match/batch para disparar análisis
+5. Resultados quedan en resultado_analisis_nomcom
+
+CAPAS DE DETECCIÓN
+──────────────────
+1. NORMALIZACIÓN: leetspeak (3→E, 1→I, 0→O, @→A, $→S), acentos,
+   sufijos legales (SAC, EIRL, SRL), stopwords comerciales, IZI*
+2. SINTÁCTICA: TF-IDF char n-grams + Jaro-Winkler + Levenshtein
+3. SEMÁNTICA: TF-IDF word n-grams + token overlap
+4. IA: Azure OpenAI gpt-4.1 (solo zona gris 0.55-0.89)
+
+UMBRALES
+────────
+ALTA  : score >= 0.90
+MEDIA : score >= 0.70
+BAJA  : score >= 0.55

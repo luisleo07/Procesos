@@ -1,0 +1,1 @@
+us-central1-docker.pkg.dev/dev-izipay-advanced-analytics/backoffice-api/fraude-comparador-v6:v6.2

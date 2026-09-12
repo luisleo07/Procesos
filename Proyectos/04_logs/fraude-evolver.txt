@@ -1,0 +1,51 @@
+TIMESTAMP: 2026-05-11T13:15:22.525553Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     Finished server process [1]
+
+TIMESTAMP: 2026-05-11T13:15:22.525455Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     Application shutdown complete.
+
+TIMESTAMP: 2026-05-11T13:15:22.525288Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     Waiting for application shutdown.
+
+TIMESTAMP: 2026-05-11T13:15:22.423954Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     Shutting down
+
+TIMESTAMP: 2026-05-11T13:00:15.024368Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     169.254.169.126:63476 - "POST /weekly-analysis HTTP/1.1" 200 OK
+
+TIMESTAMP: 2026-05-11T13:00:15.023939Z
+SEVERITY: 
+TEXT_PAYLOAD: ERROR:evolver:GPT evolver fallo: 400 Client Error: Bad Request for url: https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/responses?api-version=2025-04-01-preview
+
+TIMESTAMP: 2026-05-11T13:00:10.037206Z
+SEVERITY: INFO
+TEXT_PAYLOAD: Default STARTUP TCP probe succeeded after 1 attempt for container "fraude-evolver-1" on port 8080.
+
+TIMESTAMP: 2026-05-11T13:00:10.032586Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
+
+TIMESTAMP: 2026-05-11T13:00:10.030960Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     Application startup complete.
+
+TIMESTAMP: 2026-05-11T13:00:10.030542Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     Waiting for application startup.
+
+TIMESTAMP: 2026-05-11T13:00:10.030514Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     Started server process [1]
+
+TIMESTAMP: 2026-05-11T13:00:01.166121Z
+SEVERITY: INFO
+TEXT_PAYLOAD: Starting new instance. Reason: AUTOSCALING - Instance started due to configured scaling factors (e.g. CPU utilization, request throughput, etc.) or no existing capacity for current traffic.
+
+TIMESTAMP: 2026-05-11T13:00:01.120871Z
+SEVERITY: INFO
+TEXT_PAYLOAD: 

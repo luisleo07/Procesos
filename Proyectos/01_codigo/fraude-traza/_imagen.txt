@@ -1,0 +1,1 @@
+us-central1-docker.pkg.dev/dev-izipay-advanced-analytics/backoffice-api/fraude-traza:v2.0.5-no-id

@@ -1,0 +1,25 @@
+attemptDeadline: 180s
+description: Pipeline diario Fraude NomCom - 11 AM Lima - v1.1 async
+httpTarget:
+  headers:
+    User-Agent: Google-Cloud-Scheduler
+  httpMethod: POST
+  oidcToken:
+    audience: https://fraude-traza-322392286721.us-central1.run.app
+    serviceAccountEmail: dev-izipay-iexpress-api-segmen@dev-izipay-advanced-analytics.iam.gserviceaccount.com
+  uri: https://fraude-traza-322392286721.us-central1.run.app/pipeline/run?origen=PIPELINE_DIARIO
+lastAttemptTime: '2026-05-10T16:31:20.209540Z'
+name: projects/dev-izipay-advanced-analytics/locations/us-central1/jobs/fraude-nomcom-pipeline-diario
+retryConfig:
+  maxBackoffDuration: 600s
+  maxDoublings: 5
+  maxRetryDuration: 0s
+  minBackoffDuration: 30s
+  retryCount: 3
+schedule: 15 11 * * *
+scheduleTime: '2026-05-11T16:15:04.069095Z'
+state: ENABLED
+status:
+  code: 4
+timeZone: America/Lima
+userUpdateTime: '2026-05-05T23:41:31.025580Z'

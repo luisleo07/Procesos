@@ -1,0 +1,790 @@
+"""
+Motor de comparación v5.1: Prompt IA corregido + caps relajadas + WELL_KNOWN_BRANDS ampliado
+"""
+import re, unicodedata, logging, time, os, json, threading
+from typing import List, Dict, Tuple, Optional
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+logger = logging.getLogger("engine")
+
+STOPWORDS = {
+    "sac","sa","srl","eirl","scrl","saa","de","del","la","el","los","las",
+    "y","en","peru","corp","group","empresa","comercial","servicios",
+    "inversiones","sociedad","anonima","limitada","individual",
+    "responsabilidad","compania","cia","inc","llc","ltd","spa","izi","izi*",
+}
+
+LEET_MAP = {"0":"o","1":"i","3":"e","4":"a","5":"s","7":"t","8":"b","@":"a","$":"s","!":"i","+":"t"}
+
+PHONETIC_MAP = [
+    (r"ph","f"),(r"ck","k"),(r"sh","s"),(r"th","t"),(r"v","b"),(r"z","s"),
+    (r"x","ks"),(r"qu","k"),(r"ce","se"),(r"ci","si"),(r"ge","je"),(r"gi","ji"),
+    (r"ll","y"),(r"rr","r"),(r"nn","n"),(r"mm","m"),(r"ss","s"),(r"tt","t"),
+    (r"cc","k"),(r"ff","f"),(r"h",""),
+]
+
+GENERIC_WORDS = {
+    "floreria","bodega","tienda","minimarket","market","restaurant","restaurante",
+    "polleria","cevicheria","panaderia","pasteleria","libreria","ferreteria",
+    "farmacia","botica","salon","spa","gym","fitness","bar","cafe","cafeteria",
+    "pizzeria","chifa","cebicheria","licoreria","verduleria","fruteria","carniceria",
+    "peluqueria","barberia","lavanderia","carpinteria","zapateria","joyeria",
+    "relojeria","vidrieria","muebleria","papeleria","imprenta","taller","garage",
+    "bodeguita","tiendita","kiosko","kiosco","bazar","boutique","store","shop",
+    "food","foods","burger","chicken","pizza","sushi","grill","wok","express",
+    "delivery","digital","tech","online","web","app","movil","celular","celulares",
+    "repuestos","autopartes","accesorios","bebidas","frutas","verduras","abarrotes",
+    "golosinas","dulces","snacks","helados","jugos","industrial","distribuidora",
+    "comercializadora","importadora","exportadora","constructora","consultora",
+    "inmobiliaria","transportes","logistica","textil","confecciones","calzado",
+    "dental","clinica","laboratorio","optica","veterinaria","consultorio",
+    "estudio","academia","instituto","colegio","nido","guarderia",
+    "hotel","hostal","hospedaje","alojamiento","pension","residencial",
+    "automotriz","mecanica","electrica","electronica","soldadura","pintura",
+    "decoraciones","eventos","catering","banquetes","buffet","recepciones",
+    "foto","fotografia","video","audio","musica","arte","diseno","grafico",
+    "contadores","abogados","notaria","asesores","consultores","agencia",
+    "minimarke","minimercado","supermercado","mercado","plaza","centro","complejo",
+    "multiservicios","multiservicio","servicios","servicio","general","generales",
+    "odontologo","odontologia","descartables","empaques","envases","artesania",
+    "maravillas","ingenieros","glass","bloom","hosting","peru","fresh","room",
+}
+
+GENERIC_PREFIXES = {
+    "bodega","tienda","salon","taller","mercado","minimarket","market","chifa",
+    "polleria","cevicheria","restaurant","farmacia","botica","libreria","ferreteria",
+    "panaderia","pasteleria","licoreria","verduleria","peluqueria","barberia",
+    "veterinaria","clinica","dental","hotel","hostal","lavanderia","carpinteria",
+    "zapateria","joyeria","vidrieria","muebleria","papeleria","floreria",
+    "fruteria","carniceria","boutique","bazar","kiosco","kiosko","cafeteria",
+    "pizzeria","burger","sushi","grill","wok","consultorio","estudio",
+    "academia","instituto","optica","laboratorio","foto","agencia","imprenta",
+    "artesania","confecciones","descartables",
+}
+
+GEOGRAPHIC_NAMES = {
+    "gamarra","miraflores","san isidro","san borja","surco","lima","callao",
+    "cusco","arequipa","trujillo","chiclayo","piura","ica","huancayo","tacna",
+    "puno","iquitos","moyobamba","tarapoto","chimbote","huaraz","cajamarca",
+    "ayacucho","pucallpa","juliaca","sullana","tumbes","huanuco","cerro de pasco",
+    "barranco","chorrillos","magdalena","pueblo libre","jesus maria","lince",
+    "rimac","comas","los olivos","san martin","ate","santa anita","surquillo",
+    "san juan","villa maria","villa el salvador","ventanilla","independencia",
+    "la molina","san miguel","brena","la victoria","chacarilla","carabayllo",
+    "lurin","pachacamac","cieneguilla","ancon","punta hermosa","punta negra",
+    "san bartolo","santa maria","chilca","canete","huacho","huaral","chancay",
+    "chosica","chaclacayo","manchay","jicamarca","collique","zapallal",
+    "pacasmayo","lambayeque","ferrenafe","chepen","ascope","viru","otuzco",
+    "nazca","chincha","pisco","huancavelica","abancay","andahuaylas","moquegua",
+    "chachapoyas","bagua","jaen","yurimaguas","tingo maria","oxapampa",
+    "huamanga","huanta","satipo","tarma","la oroya","cerro","canta",
+}
+
+RELIGIOUS_EXPRESSIONS = {
+    "dios es amor","dios es fiel","dios es grande","dios es bueno","dios es poder",
+    "san martin","santa rosa","san jose","san pedro","san pablo","san juan",
+    "san antonio","san miguel","san francisco","san carlos","san luis",
+    "santa maria","santa ana","santa lucia","santa cruz","santo domingo",
+    "virgen","senor de los milagros","cristo","jesus","divino",
+    "bendicion","bendiciones","gracia","fe","esperanza","milagros",
+    "sagrado","inmaculada","rosario","mercedes","guadalupe","fatima","lourdes",
+}
+
+PERSON_FIRST_NAMES = {
+    "jose","juan","carlos","luis","pedro","miguel","jorge","antonio","manuel",
+    "francisco","fernando","ricardo","roberto","rafael","daniel","david",
+    "maria","rosa","ana","carmen","julia","elena","luz","martha","patricia",
+    "sandra","diana","valentina","esmeralda","nicole","yohana","adriana",
+    "neyra","joel","jonas","nala","rocco","dina","michel",
+    "jessica","carolina","gladys","gloria","sofia","camila","luciana",
+    "alejandro","sebastian","gabriel","santiago","mateo","emilio","andres",
+    "renato","fabian","christian","bryan","kevin","jhonny","jimmy","willy",
+    "pilar","isabel","teresa","cecilia","silvia","norma","sonia","jenny",
+    "karen","karina","vanessa","paola","claudia","veronica","angela",
+    "soledad","beatriz","mercedes","consuelo","dolores","esperanza",
+    "natalia","lorena","viviana","liliana","margarita","feliciano",
+    "gustavo","benjamin","gianfranco","nilson","daphne","britney",
+    "katty","elizabeth","wilfredo","yacely","romina","handrys",
+}
+
+WELL_KNOWN_BRANDS = {
+    "TOTTUS","WONG","METRO","RIPLEY","SODIMAC","PROMART","OECHSLE",
+    "PLAZA VEA","ENTEL","CLARO","MOVISTAR","BCP","BBVA","INTERBANK",
+    "SCOTIABANK","MABE","LA POSITIVA","RIMAC","MAPFRE","PACIFICA",
+    "BACKUS","GLORIA","ALICORP","NESTLE","COCA COLA","PEPSI",
+    "SAMSUNG","APPLE","HUAWEI","NIKE","ADIDAS","PUMA",
+    "MCDONALDS","KFC","STARBUCKS","BEMBOS","PARDOS","NORKYS",
+    "CEMENTOS PACASMAYO","FERREYROS","VOLVO","TOYOTA","HYUNDAI",
+    "FALABELLA","SAGA","CENCOSUD","INKAFARMA","MIFARMA",
+    "TAMBO","MASS","LISTO","PRIMAX","REPSOL","PECSA",
+    "MARATHON","MAESTRO","HIRAOKA","CURACAO","EFE","LA CURACAO",
+    "REAL PLAZA","JOCKEY PLAZA","MEGAPLAZA","PLAZA NORTE",
+    "COCA COLA","INCA KOLA","PILSEN","CRISTAL","CUSQUENA",
+    "LAIVE","LECHE GLORIA","DONOFRIO","SUBLIME","CAMPO FE",
+    "BATA","PAYLESS","PLATANITOS","SKECHERS","ZARA","H&M",
+    "VISA","MASTERCARD","DINERS","AMERICAN EXPRESS",
+    "CLARO","BITEL","TELEFONICA","DIRECTV","NETFLIX",
+    "UBER","RAPPI","PEDIDOSYA","GLOVO","CORNERSHOP",
+    "LATAM","AVIANCA","SKY","VIVA AIR","STAR PERU","LC PERU",
+    "MABE PERU","WHIRLPOOL","LG","ELECTROLUX","BOSCH",
+    "DISTRIBUIDORA VEGA","VEGA MARKET",
+    "XIAOMI","AQUAFRESH","TOTTO","GLOVO","STARBUCKS","REBOXED",
+    "SILVERSTONE","HEISENBERG","SOITEC","PAYPAL","MERCADO LIBRE",
+    "UBER EATS","TESLA","BMW","MERCEDES BENZ","AUDI","VOLKSWAGEN",
+    "ROLEX","GUCCI","LOUIS VUITTON","CHANEL","GOOGLE","MICROSOFT",
+    "INTEL","AMD","NVIDIA","FILA","CONVERSE","VANS","UNDER ARMOUR",
+    "NETFLIX","SPOTIFY","DISNEY","YAPE","PLIN","COLGATE","HUGGIES",
+    "PAMPERS","NESTLE","MONDELEZ","UNILEVER","PROCTER GAMBLE",
+    "CATERPILLAR","MICHELIN","GOODYEAR","BOSCH","MAKITA","DEWALT",
+    "NORTON","AVAST","KASPERSKY","CLARO","MOVISTAR","ENTEL","BITEL",
+}
+
+
+def normalize_text(text: str) -> str:
+    if not text: return ""
+    t = text.lower().strip()
+    if t.startswith("izi*"): t = t[4:].strip()
+    t = unicodedata.normalize("NFD", t)
+    t = "".join(c for c in t if unicodedata.category(c) != "Mn")
+    for k, v in LEET_MAP.items(): t = t.replace(k, v)
+    t = re.sub(r"[^a-z0-9\s]", " ", t)
+    return re.sub(r"\s+", " ", t).strip()
+
+def normalize_phonetic(text: str) -> str:
+    t = normalize_text(text)
+    for p, r in PHONETIC_MAP: t = re.sub(p, r, t)
+    return t
+
+BRAND_TOKENS_MAP = {}
+for _b in WELL_KNOWN_BRANDS:
+    _bn = normalize_text(_b)
+    _bp = normalize_phonetic(_bn)
+    for _tok in _bn.split():
+        if len(_tok) >= 4 and _tok not in STOPWORDS and _tok not in GENERIC_WORDS:
+            BRAND_TOKENS_MAP[_tok] = _b
+    _bns = _bn.replace(" ", "")
+    if len(_bns) >= 5: BRAND_TOKENS_MAP[_bns] = _b
+    _bpns = _bp.replace(" ", "")
+    if len(_bpns) >= 5 and _bpns != _bns: BRAND_TOKENS_MAP[_bpns] = _b
+
+def precise_brand_check(tokens_to_check):
+    from rapidfuzz.distance import JaroWinkler as JW
+    for tok in tokens_to_check:
+        if len(tok) < 4 or tok in GENERIC_WORDS or tok in STOPWORDS: continue
+        tok_ph = normalize_phonetic(tok)
+        for brand_tok, brand_full in BRAND_TOKENS_MAP.items():
+            if len(brand_tok) < 4: continue
+            s = max(JW.similarity(tok, brand_tok), JW.similarity(tok_ph, normalize_phonetic(brand_tok)))
+            if s >= 0.88 and min(len(tok), len(brand_tok)) >= 4:
+                return True, brand_full, s
+    return False, "", 0
+
+def extract_core_tokens(text: str) -> List[str]:
+    return [t for t in normalize_text(text).split() if t not in STOPWORDS and len(t) > 1]
+
+def apply_phonetic(token: str) -> str:
+    t = token
+    for p, r in PHONETIC_MAP: t = re.sub(p, r, t)
+    return t
+
+def clean_izi(name: str) -> str:
+    n = name.strip()
+    if n.upper().startswith("IZI*"): n = n[4:].strip()
+    return n
+
+def is_person_ruc(ruc: str) -> bool:
+    if not ruc: return False
+    ruc = ruc.strip()
+    return len(ruc) <= 8 or ruc.startswith("10")
+
+def names_overlap(nom_norm: str, razon_norm: str) -> float:
+    if not nom_norm or not razon_norm: return 0.0
+    nom_toks = set(nom_norm.split()) - STOPWORDS
+    razon_toks = set(razon_norm.split()) - STOPWORDS
+    if not nom_toks: return 0.0
+    overlap = nom_toks & razon_toks
+    return len(overlap) / len(nom_toks)
+
+
+def pre_classify(nom_comercio: str, ruc: str, razon_social: str) -> Tuple[str, str]:
+    nom_clean = clean_izi(nom_comercio)
+    nom_norm = normalize_text(nom_clean)
+    tokens = [t for t in nom_norm.split() if t not in STOPWORDS and len(t) > 1]
+
+    if not nom_norm or len(nom_norm) < 2:
+        return "SKIP", "nombre_vacio"
+
+    if re.search(r'^[\d\s]+$', nom_norm):
+        return "SKIP", "solo_numeros"
+
+    if re.search(r'(?:prueba|test|qa\b|demo|sandbox)', nom_norm):
+        return "SKIP", "nombre_prueba"
+
+    for expr in RELIGIOUS_EXPRESSIONS:
+        if len(expr) >= 6 and (expr == nom_norm or (nom_norm.startswith(expr) and len(nom_norm) - len(expr) <= 5)):
+            return "SKIP", f"religioso:{expr}"
+
+    if nom_norm in GEOGRAPHIC_NAMES and len(tokens) <= 1:
+        return "SKIP", f"geografico:{nom_norm}"
+
+    if len(tokens) == 1 and tokens[0] in GENERIC_WORDS:
+        return "SKIP", f"generico_puro:{tokens[0]}"
+
+    if len(tokens) == 1 and tokens[0] in PERSON_FIRST_NAMES:
+        return "SKIP", f"nombre_persona:{tokens[0]}"
+
+    has_corp_suffix = bool(re.search(r'\b(?:sac|saa|srl|eirl|scrl)\b', nom_norm))
+    if has_corp_suffix and is_person_ruc(ruc):
+        return "EVALUATE", "FLAG:persona_con_sufijo_corp"
+
+    all_generic_or_personal = all(
+        t in GENERIC_WORDS or t in PERSON_FIRST_NAMES or t in GEOGRAPHIC_NAMES or len(t) <= 2
+        for t in tokens
+    )
+    if all_generic_or_personal and len(tokens) <= 3:
+        return "SKIP", f"combinacion_generica:{nom_norm}"
+
+    if is_person_ruc(ruc) and razon_social:
+        overlap = names_overlap(nom_norm, normalize_text(razon_social))
+        if overlap >= 0.4:
+            return "SKIP", "persona_con_su_nombre"
+
+    if len(tokens) >= 1 and tokens[0] in GENERIC_PREFIXES:
+        remaining = [t for t in tokens[1:] if t not in GENERIC_WORDS and t not in PERSON_FIRST_NAMES and t not in GEOGRAPHIC_NAMES and len(t) > 2]
+        if not remaining:
+            return "SKIP", f"rubro_generico:{tokens[0]}"
+        has_b, brand, score = precise_brand_check(remaining)
+        if has_b:
+            return "EVALUATE", f"BRAND_IN_RUBRO:{brand}({score:.2f})"
+        all_short_names = all(len(t) <= 6 for t in remaining)
+        if all_short_names and len(remaining) <= 2:
+            return "SKIP", f"rubro_con_nombre_local:{tokens[0]}"
+
+    if len(tokens) <= 1 and len(nom_norm) <= 3:
+        return "SKIP", "nombre_muy_corto"
+
+    return "EVALUATE", "requiere_ia"
+
+
+class ComparisonEngine:
+    def __init__(self, db_url: str):
+        self.db_url = db_url
+        self.ai_endpoint = os.environ.get("AZURE_OPENAI_ENDPOINT", "")
+        self.ai_key = os.environ.get("AZURE_OPENAI_API_KEY", "")
+        self.ai_version = os.environ.get("AZURE_OPENAI_API_VERSION", "2025-01-01-preview")
+        self.ai_model = os.environ.get("AZURE_OPENAI_MODEL", "gpt-4.1")
+        self.ai_enabled = bool(self.ai_endpoint and self.ai_key)
+
+    def _conn(self):
+        import psycopg2
+        return psycopg2.connect(self.db_url)
+
+    def init_db(self):
+        with open(os.path.join(os.path.dirname(__file__), "sql", "schema.sql")) as f:
+            sql = f.read()
+        with self._conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql)
+            conn.commit()
+        logger.info("Schema fraude OK")
+
+    def _update_job(self, job_id: str, **kwargs):
+        sets = ", ".join(f"{k}=%s" for k in kwargs)
+        vals = list(kwargs.values()) + [job_id]
+        with self._conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(f"UPDATE fraude.jobs SET {sets}, updated_at=NOW() WHERE job_id=%s", vals)
+            conn.commit()
+
+    def _is_cancelled(self, job_id: str) -> bool:
+        with self._conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT cancel_requested FROM fraude.jobs WHERE job_id=%s", (job_id,))
+                row = cur.fetchone()
+                return row[0] if row else False
+
+    def create_job(self, use_ia: bool, threshold: float, ia_threshold: float) -> str:
+        import uuid
+        from datetime import datetime
+        job_id = f"cmp_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:6]}"
+        with self._conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "INSERT INTO fraude.jobs (job_id,use_ia,threshold,ia_threshold) VALUES (%s,%s,%s,%s)",
+                    (job_id, use_ia, threshold, ia_threshold))
+            conn.commit()
+        return job_id
+
+    def cancel_job(self, job_id: str):
+        self._update_job(job_id, cancel_requested=True)
+
+    def save_referencia(self, job_id: str, records: List[Dict]) -> int:
+        import psycopg2.extras
+        rows = []
+        for r in records:
+            nombre = r.get("nombre","") or r.get("nom_comercio","") or ""
+            if not nombre.strip(): continue
+            rows.append((job_id, nombre.strip(), normalize_text(nombre),
+                         r.get("ruc",""), r.get("razon_social",""), r.get("cod_comercio","")))
+        with self._conn() as conn:
+            with conn.cursor() as cur:
+                psycopg2.extras.execute_values(cur,
+                    "INSERT INTO fraude.upload_referencia (job_id,nombre,nombre_norm,ruc,razon_social,cod_comercio) VALUES %s",
+                    rows, template="(%s,%s,%s,%s,%s,%s)", page_size=5000)
+                cur.execute("UPDATE fraude.jobs SET total_referencia=%s WHERE job_id=%s", (len(rows), job_id))
+            conn.commit()
+        return len(rows)
+
+    def save_afiliaciones(self, job_id: str, records: List[Dict]) -> int:
+        import psycopg2.extras
+        rows = []
+        for r in records:
+            nom = r.get("nom_comercio","") or r.get("nombre","") or ""
+            if not nom.strip(): continue
+            rows.append((job_id, nom.strip(), normalize_text(nom),
+                         r.get("cod_comercio",""), r.get("ruc",""), r.get("razon_social","")))
+        with self._conn() as conn:
+            with conn.cursor() as cur:
+                psycopg2.extras.execute_values(cur,
+                    "INSERT INTO fraude.upload_afiliaciones (job_id,nom_comercio,nom_comercio_norm,cod_comercio,ruc,razon_social) VALUES %s",
+                    rows, template="(%s,%s,%s,%s,%s,%s)", page_size=5000)
+                cur.execute("UPDATE fraude.jobs SET total_afiliaciones=%s WHERE job_id=%s", (len(rows), job_id))
+            conn.commit()
+        return len(rows)
+
+    def run_comparison(self, job_id: str):
+        from rapidfuzz import fuzz, process as rfprocess
+        from rapidfuzz.distance import JaroWinkler, Levenshtein
+
+        self._update_job(job_id, status="processing", phase="Cargando datos...")
+        t0 = time.time()
+
+        with self._conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT use_ia,threshold,ia_threshold FROM fraude.jobs WHERE job_id=%s", (job_id,))
+                use_ia, threshold, ia_threshold = cur.fetchone()
+                cur.execute("SELECT nombre,nombre_norm,ruc,razon_social,cod_comercio FROM fraude.upload_referencia WHERE job_id=%s", (job_id,))
+                ref_rows = cur.fetchall()
+                cur.execute("SELECT id,nom_comercio,nom_comercio_norm,cod_comercio,ruc,razon_social FROM fraude.upload_afiliaciones WHERE job_id=%s", (job_id,))
+                afil_rows = cur.fetchall()
+
+        ref_names = [r[0] for r in ref_rows]
+        ref_norms = [r[1] for r in ref_rows]
+        ref_rucs  = [r[2] or "" for r in ref_rows]
+
+        seen = set()
+        afil_dedup = []
+        for a in afil_rows:
+            key = (a[1] or "").strip().upper() + "|" + (a[4] or "").strip()
+            if key not in seen:
+                seen.add(key)
+                afil_dedup.append(a)
+        skipped_dup = len(afil_rows) - len(afil_dedup)
+        if skipped_dup > 0:
+            logger.info(f"Dedup: {len(afil_rows)} -> {len(afil_dedup)} ({skipped_dup} duplicados)")
+        afil_rows = afil_dedup
+        total = len(afil_rows)
+
+        self._update_job(job_id, phase=f"Preparando indices ({len(ref_rows):,} ref)...")
+        ref_phonetics = [normalize_phonetic(r[0]) for r in ref_rows]
+        ref_nospaces  = [n.replace(" ","") for n in ref_norms]
+
+        # ═══════════════════════════════════════════════════════════
+        # FASE 1: FUZZY PRE-FILTRO (paralelo, rapido)
+        # ═══════════════════════════════════════════════════════════
+        self._update_job(job_id, phase=f"Fase 1/3 — Fuzzy: 0/{total}")
+        logger.info(f"Job {job_id}: {total} afil vs {len(ref_rows)} ref — START")
+
+        lock = threading.Lock()
+        counter = {"done": 0, "t_start": time.time()}
+        candidates = []
+
+        def fuzzy_one(afil):
+            if self._is_cancelled(job_id):
+                return
+
+            afil_id, nom, nom_norm, cod, ruc_afil, razon = afil
+            if not nom_norm:
+                return
+
+            nom_ph = normalize_phonetic(nom)
+            nom_ns = nom_norm.replace(" ","")
+
+            top_norm = rfprocess.extract(nom_norm, ref_norms, scorer=fuzz.ratio, limit=10, score_cutoff=25)
+            top_ph   = rfprocess.extract(nom_ph, ref_phonetics, scorer=fuzz.ratio, limit=10, score_cutoff=25)
+            top_ns   = rfprocess.extract(nom_ns, ref_nospaces, scorer=fuzz.ratio, limit=10, score_cutoff=25)
+
+            cands = set()
+            for _,_,j in top_norm: cands.add(j)
+            for _,_,j in top_ph:   cands.add(j)
+            for _,_,j in top_ns:   cands.add(j)
+
+            scored = []
+            for j in cands:
+                rn = ref_norms[j]
+                if not rn: continue
+                s_norm = fuzz.ratio(nom_norm, rn) / 100.0
+                s_ph = fuzz.ratio(nom_ph, ref_phonetics[j]) / 100.0
+                s_ns = fuzz.ratio(nom_ns, ref_nospaces[j]) / 100.0
+                pg_sim = max(s_norm, s_ph, s_ns)
+
+                s_jw = max(JaroWinkler.similarity(nom_norm, rn), JaroWinkler.similarity(nom_ns, ref_nospaces[j]))
+                s_lev = max(
+                    1-(Levenshtein.distance(nom_norm, rn)/max(len(nom_norm),len(rn),1)),
+                    1-(Levenshtein.distance(nom_ns, ref_nospaces[j])/max(len(nom_ns),len(ref_nospaces[j]),1)))
+                s_syn = s_jw*0.6 + s_lev*0.4
+
+                itoks = set(extract_core_tokens(nom))
+                rtoks = set(extract_core_tokens(ref_names[j]))
+                tmatch = 0
+                for it in itoks:
+                    bt = 0; it_p = apply_phonetic(it)
+                    for rt in rtoks:
+                        rt_p = apply_phonetic(rt)
+                        s = max(JaroWinkler.similarity(it,rt), JaroWinkler.similarity(it_p,rt_p),
+                                1.0 if (it in rt or rt in it) and min(len(it),len(rt))>=3 else 0.0)
+                        bt = max(bt, s)
+                    if bt >= 0.7: tmatch += bt
+                s_sem = tmatch / max(len(itoks),1)
+                sf = s_syn*0.35 + s_sem*0.40 + pg_sim*0.25
+                scored.append({"idx":j, "score":sf, "syn":s_syn, "sem":s_sem, "fuz":pg_sim})
+
+            scored.sort(key=lambda x: x["score"], reverse=True)
+            top5 = scored[:5]
+
+            base = {
+                "job_id": job_id,
+                "cod_comercio": cod,
+                "nom_comercio": nom,
+                "nom_comercio_norm": nom_norm,
+                "ruc_afiliacion": ruc_afil or "",
+                "razon_social": razon or "",
+                "origen_referencia": "PARQUE_TOTAL",
+                "score_ia": 0.0,
+                "detalle_ia": "",
+                "_top5": [{"nombre": ref_names[c["idx"]], "ruc": ref_rucs[c["idx"]], "score": round(c["score"],3)} for c in top5],
+            }
+
+            if top5 and top5[0]["score"] >= threshold:
+                b = top5[0]
+                base.update({
+                    "nombre_referencia_match": ref_names[b["idx"]],
+                    "ruc_referencia": ref_rucs[b["idx"]],
+                    "score_sintactico": round(b["syn"],4),
+                    "score_semantico": round(b["sem"],4),
+                    "score_fuzzy": round(b["fuz"],4),
+                    "score_final": round(b["score"],4),
+                })
+            else:
+                base.update({
+                    "nombre_referencia_match": "",
+                    "ruc_referencia": "",
+                    "score_sintactico": 0, "score_semantico": 0,
+                    "score_fuzzy": 0, "score_final": 0,
+                })
+
+            with lock:
+                counter["done"] += 1
+                candidates.append(base)
+
+        WORKERS = min(8, max(2, os.cpu_count() or 2))
+        with ThreadPoolExecutor(max_workers=WORKERS) as pool:
+            futures = {pool.submit(fuzzy_one, a): a for a in afil_rows}
+            last_update = time.time()
+            for fut in as_completed(futures):
+                try: fut.result()
+                except Exception as e: logger.warning(f"Fuzzy error: {e}")
+                now = time.time()
+                if now - last_update >= 1.0:
+                    last_update = now
+                    done = counter["done"]
+                    elapsed = now - counter["t_start"]
+                    speed = done / max(elapsed, 0.1)
+                    eta = int((total - done) / max(speed, 0.01))
+                    self._update_job(job_id, phase=f"Fase 1/3 — Fuzzy: {done}/{total}",
+                                     processed=done, speed_per_sec=round(speed,1), eta_seconds=eta)
+                    if self._is_cancelled(job_id):
+                        pool.shutdown(wait=False, cancel_futures=True)
+                        self._update_job(job_id, status="cancelled", phase="Cancelado", processed=counter["done"])
+                        return
+
+        self._update_job(job_id, processed=total, phase="Fase 1 completada")
+
+        # ═══════════════════════════════════════════════════════════
+        # FASE 2: PRE-CLASIFICACIÓN PROGRAMÁTICA (sin IA)
+        # ═══════════════════════════════════════════════════════════
+        to_evaluate = []
+        skipped_count = 0
+
+        for c in candidates:
+            classification, reason = pre_classify(c["nom_comercio"], c["ruc_afiliacion"], c["razon_social"])
+            c["_classification"] = classification
+            c["_skip_reason"] = reason
+
+            if classification == "SKIP":
+                c["score_final"] = 0
+                c["score_ia"] = 0
+                c["nivel_alerta"] = "DESCARTADO"
+                c["metodo_deteccion"] = "PRE_FILTRO"
+                c["detalle_ia"] = f"[PRE-FILTRO] {reason}"
+                skipped_count += 1
+            else:
+                to_evaluate.append(c)
+
+        logger.info(f"Pre-clasificacion: {skipped_count} descartados, {len(to_evaluate)} para IA")
+        self._update_job(job_id, phase=f"Fase 2/3 — {skipped_count} descartados, {len(to_evaluate)} para IA")
+
+        # ═══════════════════════════════════════════════════════════
+        # FASE 3: IA "JUNTA MÉDICA" (una llamada unificada por caso)
+        # ═══════════════════════════════════════════════════════════
+        if not self.ai_enabled:
+            logger.error(f"Job {job_id}: IA NO HABILITADA")
+            self._update_job(job_id, status="error", phase="Error: IA no configurada",
+                             error_msg="IA obligatoria. Configurar AZURE_OPENAI_ENDPOINT y API_KEY.")
+            return
+
+        n_ia = len(to_evaluate)
+        self._update_job(job_id, phase=f"Fase 3/3 — IA Junta Medica: 0/{n_ia}", ia_total=n_ia)
+
+        import httpx
+
+        def _call_ia(prompt: str, retries: int = 2) -> Optional[dict]:
+            for attempt in range(retries + 1):
+                try:
+                    resp = httpx.post(
+                        f"{self.ai_endpoint}/openai/deployments/{self.ai_model}/chat/completions?api-version={self.ai_version}",
+                        headers={"api-key": self.ai_key, "Content-Type": "application/json"},
+                        json={"messages": [{"role": "user", "content": prompt}], "temperature": 0.05, "max_tokens": 500},
+                        timeout=60)
+                    text = resp.json()["choices"][0]["message"]["content"]
+                    text = re.sub(r"```json\s*|\s*```", "", text).strip()
+                    return json.loads(text)
+                except Exception as e:
+                    if attempt < retries:
+                        time.sleep(1)
+                        continue
+                    logger.warning(f"IA error (intento {attempt+1}): {e}")
+                    return None
+
+        sample_refs = []
+        step = max(1, len(ref_names) // 200)
+        for i in range(0, len(ref_names), step):
+            if len(sample_refs) >= 200: break
+            sample_refs.append(f"{ref_names[i]} (RUC:{ref_rucs[i]})")
+        ref_ctx = "\n".join(f"- {r}" for r in sample_refs)
+
+        ia_done = {"n": 0}
+
+        def evaluate_one(c):
+            if self._is_cancelled(job_id): return
+
+            nom_clean = clean_izi(c["nom_comercio"])
+            top5 = c.get("_top5", [])
+            flag = c.get("_skip_reason", "")
+
+            matches_block = ""
+            if top5:
+                lines = [f'  {i+1}. "{m["nombre"]}" (RUC:{m["ruc"]}) similitud:{m["score"]:.0%}' for i, m in enumerate(top5)]
+                matches_block = "TOP 5 COMERCIOS MAS SIMILARES DEL PARQUE CORPORATIVO (35mil RUC 20):\n" + "\n".join(lines)
+
+            flag_block = f"\nFLAG PRE-ANALISIS: {flag}" if flag.startswith("FLAG:") else ""
+
+            prompt = f"""Eres un panel de 3 especialistas antifraude evaluando si una nueva afiliacion suplanta una marca conocida. Debes llegar a CONSENSO en UNA sola respuesta.
+
+CASO A EVALUAR:
+- Nombre comercial: "{nom_clean}"
+- DNI/RUC: {c.get("ruc_afiliacion","N/A")} ({"persona natural" if is_person_ruc(c.get("ruc_afiliacion","")) else "persona juridica"})
+- Razon social: {c.get("razon_social","N/A")}
+{flag_block}
+
+{matches_block}
+
+MUESTRA DEL PARQUE CORPORATIVO (200 de 35,000 empresas RUC 20):
+{ref_ctx}
+
+═══ REGLAS DE EVALUACION ═══
+
+ES FRAUDE si cumple TODOS estos criterios:
+A) El nombre SUPLANTA INTENCIONALMENTE una marca ESPECIFICA, REAL y CONOCIDA
+B) Puedes nombrar EXACTAMENTE que marca se suplanta
+C) Puedes identificar la TECNICA usada (typosquatting, leetspeak, fonetica, insercion, nombre_exacto)
+D) La similitud NO es coincidencia ni uso generico del mismo rubro
+
+IMPORTANTE: Las marcas suplantadas pueden ser INTERNACIONALES o NACIONALES y NO necesariamente aparecen en la lista de referencia. Usa tu conocimiento general de marcas reales. Ejemplos: Aquafresh (pasta dental), Xiaomi (tecnologia), Glovo (delivery), Caterpillar (maquinaria), Heisenberg (marca registrada), Netflix, Starbucks, etc.
+
+TECNICAS VALIDAS:
+- Typosquatting: TOTTOS→TOTTUS, WNOG→WONG, RIPELY→RIPLEY, XIOMI→XIAOMI
+- Leetspeak: S0DIMAC→SODIMAC, M3TRO→METRO
+- Fonetica: PITASIVA→LA POSITIVA, MABEUR→MABE PERU, ACQUA FRESH→AQUAFRESH
+- Insercion/omision: PLAZAVEA→PLAZA VEA, SINMECSILVERSTONE→SILVERSTONE
+- Nombre exacto: persona natural usando nombre de empresa RUC 20 como suyo
+
+NO ES FRAUDE (score 0-20):
+- Nombres de rubro: FLORERIA, BODEGA, BAR, RESTAURANTE, MARKET, FARMACIA
+- Nombres personales: nombre propio usado como marca (ADRIANA SUAREZ, DIANA SOLEDAD)
+- Nombres geograficos: GAMARRA, CHICLAYO, MIRAFLORES
+- Expresiones religiosas: DIOS ES AMOR, SAN JOSE
+- Palabras comunes: BEBIDAS, CELULARES, INDUSTRIAL
+- Nombres creativos ORIGINALES sin relacion con marcas reales: BLUE VELVET, SEROTONINA
+- Abreviaturas/apodos personales: DINANL (DINA+NL), GUSS (GUSTAVO), ROCCOCARPIO
+- Dos negocios del mismo rubro con nombres parecidos pero genericos
+- Similitud con empresa del parque cuando AMBOS usan un termino generico del rubro
+
+REGLA DE ORO:
+Si NO puedes nombrar la marca especifica y real → score MAXIMO 20.
+El prefijo IZI* es estandar de Izipay, IGNORAR.
+RUC persona natural NO es evidencia de fraude por si solo.
+
+═══ RESPUESTA ═══
+SOLO JSON:
+{{"es_fraude":true/false,"marca_suplantada":"<marca exacta o vacio>","tecnica":"<typosquatting|leetspeak|fonetica|insercion|nombre_exacto|ninguna>","score":<0-100>,"razon":"<consenso conciso>"}}
+
+Scores: fraude claro 80-100, sospechoso 50-79, dudoso 30-49, no fraude 0-20."""
+
+            result = _call_ia(prompt)
+            if result:
+                c["_ia_result"] = result
+            else:
+                c["_ia_result"] = {"es_fraude": False, "marca_suplantada": "", "tecnica": "ninguna", "score": 0, "razon": "Error IA"}
+
+            ia_done["n"] += 1
+            if ia_done["n"] % 3 == 0 or ia_done["n"] == n_ia:
+                self._update_job(job_id, phase=f"Fase 3/3 — IA: {ia_done['n']}/{n_ia}", ia_evaluated=ia_done["n"])
+
+        with ThreadPoolExecutor(max_workers=6) as pool:
+            list(pool.map(evaluate_one, to_evaluate))
+
+        if self._is_cancelled(job_id): return
+
+        # ═══════════════════════════════════════════════════════════
+        # FASE 4: VERIFICACIÓN POST-IA + SCORING FINAL (programático)
+        # ═══════════════════════════════════════════════════════════
+        self._update_job(job_id, phase="Verificacion post-IA...")
+
+        for c in to_evaluate:
+            ia = c.get("_ia_result", {})
+            ia_score = ia.get("score", 0)
+            marca = (ia.get("marca_suplantada", "") or "").strip()
+            tecnica = ia.get("tecnica", "ninguna") or "ninguna"
+            razon = ia.get("razon", "") or ""
+            es_fraude = ia.get("es_fraude", False)
+
+            if marca and marca.lower() not in ("", "ninguna", "n/a", "no aplica", "vacio", "no"):
+                marca_norm = normalize_text(marca)
+                marca_in_parque = any(
+                    (marca_norm in rn or rn in marca_norm) and len(min(marca_norm, rn, key=len)) >= 4
+                    for rn in ref_norms if rn and len(rn) > 3
+                )
+                marca_is_known = any(k in marca.upper() for k in WELL_KNOWN_BRANDS)
+
+                if not marca_in_parque and not marca_is_known:
+                    ia_score = min(ia_score, 35)
+                    razon = f"[VERIF: marca '{marca}' no en parque ni conocida] {razon}"
+                    marca = ""
+                    es_fraude = False
+            else:
+                if ia_score > 20:
+                    ia_score = min(ia_score, 20)
+                    razon = f"[REGLA ORO: sin marca nombrada → cap 20] {razon}"
+                es_fraude = False
+                marca = ""
+
+            if tecnica in ("ninguna", "") and ia_score > 40:
+                ia_score = min(ia_score, 40)
+                razon = f"[SIN TECNICA: cap 40] {razon}"
+
+            if not es_fraude and ia_score > 65:
+                ia_score = min(ia_score, 65)
+
+            final_score = ia_score / 100.0
+            fuzzy_score = c.get("score_final", 0)
+            if fuzzy_score > 0 and final_score > 0:
+                final_score = fuzzy_score * 0.15 + final_score * 0.85
+
+            c["score_ia"] = round(ia_score / 100.0, 4)
+            c["score_final"] = round(final_score, 4)
+
+            if final_score >= 0.80:
+                c["nivel_alerta"] = "ALTA"
+            elif final_score >= 0.60:
+                c["nivel_alerta"] = "MEDIA"
+            elif final_score >= 0.30:
+                c["nivel_alerta"] = "BAJA"
+            else:
+                c["nivel_alerta"] = "DESCARTADO"
+
+            c["metodo_deteccion"] = "JUNTA_MEDICA"
+            if marca:
+                c["nombre_referencia_match"] = marca
+            c["detalle_ia"] = f"[IA:{ia_score} T:{tecnica}] {razon}"
+
+        # ═══════════════════════════════════════════════════════════
+        # GUARDAR RESULTADOS
+        # ═══════════════════════════════════════════════════════════
+        results_all = []
+        for c in candidates:
+            for k in list(c.keys()):
+                if k.startswith("_"): del c[k]
+            if c.get("nivel_alerta", "DESCARTADO") != "DESCARTADO":
+                results_all.append(c)
+
+        results_all.sort(key=lambda x: x["score_final"], reverse=True)
+
+        self._update_job(job_id, phase="Guardando resultados...")
+        self._save_results(job_id, results_all)
+
+        elapsed_ms = int((time.time()-t0)*1000)
+        alta = sum(1 for r in results_all if r["nivel_alerta"]=="ALTA")
+        media = sum(1 for r in results_all if r["nivel_alerta"]=="MEDIA")
+        baja = sum(1 for r in results_all if r["nivel_alerta"]=="BAJA")
+
+        self._update_job(job_id, status="done", phase="Completado",
+            processed=total, matches_total=len(results_all),
+            matches_alta=alta, matches_media=media, matches_baja=baja,
+            elapsed_ms=elapsed_ms, speed_per_sec=0, eta_seconds=0,
+            ia_evaluated=n_ia)
+
+        logger.info(f"Job {job_id} DONE: {len(results_all)} alertas (A:{alta} M:{media} B:{baja}), {skipped_count} pre-filtrados, {elapsed_ms}ms")
+
+    def _save_results(self, job_id, results):
+        import psycopg2.extras
+        if not results: return
+        rows = [(r["job_id"],r.get("cod_comercio",""),r["nom_comercio"],r["nom_comercio_norm"],
+                 r.get("nombre_referencia_match",""),r.get("ruc_afiliacion",""),r.get("ruc_referencia",""),
+                 r.get("razon_social",""),r.get("origen_referencia",""),
+                 r.get("score_sintactico",0),r.get("score_semantico",0),r.get("score_fuzzy",0),
+                 r.get("score_ia",0),r["score_final"],r["nivel_alerta"],r["metodo_deteccion"],
+                 r.get("detalle_ia","")) for r in results]
+        with self._conn() as conn:
+            with conn.cursor() as cur:
+                psycopg2.extras.execute_values(cur,
+                    """INSERT INTO fraude.resultados (job_id,cod_comercio,nom_comercio,nom_comercio_norm,
+                       nombre_referencia_match,ruc_afiliacion,ruc_referencia,razon_social,origen_referencia,
+                       score_sintactico,score_semantico,score_fuzzy,score_ia,score_final,nivel_alerta,
+                       metodo_deteccion,detalle_ia) VALUES %s""",
+                    rows, template="(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", page_size=1000)
+            conn.commit()
+
+    def get_job(self, job_id):
+        with self._conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT * FROM fraude.jobs WHERE job_id=%s", (job_id,))
+                row = cur.fetchone()
+                if not row: return None
+                return dict(zip([d[0] for d in cur.description], row))
+
+    def get_results(self, job_id, limit=1000):
+        with self._conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT * FROM fraude.resultados WHERE job_id=%s ORDER BY score_final DESC LIMIT %s", (job_id,limit))
+                rows = cur.fetchall()
+                return [dict(zip([d[0] for d in cur.description], r)) for r in rows]
+
+    def list_jobs(self, limit=20):
+        with self._conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""SELECT job_id,created_at,status,phase,total_afiliaciones,total_referencia,
+                    processed,matches_total,matches_alta,matches_media,matches_baja,elapsed_ms,use_ia
+                    FROM fraude.jobs ORDER BY created_at DESC LIMIT %s""", (limit,))
+                rows = cur.fetchall()
+                return [dict(zip([d[0] for d in cur.description], r)) for r in rows]

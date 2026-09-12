@@ -1,0 +1,1199 @@
+TIMESTAMP: 2026-05-10T16:34:55.425749Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     169.254.169.126:20242 - "GET /results/cmp_20260510_162835_225b0a HTTP/1.1" 200 OK
+
+TIMESTAMP: 2026-05-10T16:34:55.327218Z
+SEVERITY: INFO
+TEXT_PAYLOAD: 
+
+TIMESTAMP: 2026-05-10T16:34:55.282104Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     169.254.169.126:20230 - "GET /status/cmp_20260510_162835_225b0a HTTP/1.1" 200 OK
+
+TIMESTAMP: 2026-05-10T16:34:55.232218Z
+SEVERITY: INFO
+TEXT_PAYLOAD: 
+
+TIMESTAMP: 2026-05-10T16:34:51.390754Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:51,388 engine INFO Job cmp_20260510_162835_225b0a DONE v5.4: 1 alertas (A:1 M:0 B:0), 158 pre-filtrados, 365540ms
+
+TIMESTAMP: 2026-05-10T16:34:51.163157Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:51,163 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:50.958242Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:50,958 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:50.383796Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:50,384 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:50.220153Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     169.254.169.126:20206 - "GET /status/cmp_20260510_162835_225b0a HTTP/1.1" 200 OK
+
+TIMESTAMP: 2026-05-10T16:34:50.167530Z
+SEVERITY: INFO
+TEXT_PAYLOAD: 
+
+TIMESTAMP: 2026-05-10T16:34:49.993979Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:49,994 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:49.962262Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:49,962 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:49.703394Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:49,703 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:49.423749Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:49,424 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:48.667188Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:48,667 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:48.587575Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:48,587 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:48.477313Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:48,477 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:48.439408Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:48,439 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:47.867380Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:47,867 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:47.624194Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:47,623 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:47.350135Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:47,349 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:46.974858Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:46,975 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:46.783420Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:46,783 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:46.040412Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:46,038 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:45.842032Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:45,842 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:45.712876Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:45,713 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:45.519697Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:45,516 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:45.203681Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:45,204 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:45.148988Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     169.254.169.126:25358 - "GET /status/cmp_20260510_162835_225b0a HTTP/1.1" 200 OK
+
+TIMESTAMP: 2026-05-10T16:34:45.103789Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:45,104 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:45.076621Z
+SEVERITY: INFO
+TEXT_PAYLOAD: 
+
+TIMESTAMP: 2026-05-10T16:34:44.242442Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:44,242 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:43.672232Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:43,672 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:43.664204Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:43,664 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:43.515962Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:43,516 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:43.491680Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:43,490 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:43.040419Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:43,040 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:42.366632Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:42,366 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:41.471205Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:41,470 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:41.412907Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:41,413 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:41.386245Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:41,386 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:41.204706Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:41,205 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:41.039240Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:41,038 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:40.863835Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:40,864 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:40.053724Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     169.254.169.126:25344 - "GET /status/cmp_20260510_162835_225b0a HTTP/1.1" 200 OK
+
+TIMESTAMP: 2026-05-10T16:34:40.006727Z
+SEVERITY: INFO
+TEXT_PAYLOAD: 
+
+TIMESTAMP: 2026-05-10T16:34:39.853329Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:39,853 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:39.836692Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:39,837 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:39.624888Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:39,625 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:39.552977Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:39,553 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:39.360968Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:39,361 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:39.136885Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:39,137 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:38.087262Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:38,086 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:37.940374Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:37,941 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:37.620309Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:37,620 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:37.551954Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:37,552 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:37.329180Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:37,329 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:37.289466Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:37,290 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:36.595284Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:36,595 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:36.045170Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:36,045 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:35.801039Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:35,800 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:35.777729Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:35,777 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:35.549112Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:35,549 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:35.491139Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:35,491 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:34.981736Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     169.254.169.126:24992 - "GET /status/cmp_20260510_162835_225b0a HTTP/1.1" 200 OK
+
+TIMESTAMP: 2026-05-10T16:34:34.911270Z
+SEVERITY: INFO
+TEXT_PAYLOAD: 
+
+TIMESTAMP: 2026-05-10T16:34:33.976759Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:33,976 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:33.937420Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:33,937 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:33.924380Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:33,924 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:33.918561Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:33,918 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:33.815556Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:33,814 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:33.452822Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:33,453 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:32.284167Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:32,284 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:32.117181Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:32,117 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:31.701901Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:31,702 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:31.584841Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:31,585 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:31.520468Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:31,521 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:30.821434Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:30,822 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:30.603997Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:30,604 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:30.340253Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:30,340 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:29.894956Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     169.254.169.126:24976 - "GET /status/cmp_20260510_162835_225b0a HTTP/1.1" 200 OK
+
+TIMESTAMP: 2026-05-10T16:34:29.824215Z
+SEVERITY: INFO
+TEXT_PAYLOAD: 
+
+TIMESTAMP: 2026-05-10T16:34:29.820223Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:29,820 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:29.490217Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:29,490 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:29.458576Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:29,458 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:28.932547Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:28,932 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:28.770691Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:28,770 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:28.455859Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:28,456 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:27.937785Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:27,937 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:27.512467Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:27,512 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:27.352950Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:27,353 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:26.833525Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:26,834 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:26.463624Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:26,464 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:26.312690Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:26,312 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:26.187166Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:26,187 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:25.846710Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:25,845 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:25.283423Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:25,284 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:24.985210Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:24,985 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:24.802155Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     169.254.169.126:22220 - "GET /status/cmp_20260510_162835_225b0a HTTP/1.1" 200 OK
+
+TIMESTAMP: 2026-05-10T16:34:24.759349Z
+SEVERITY: INFO
+TEXT_PAYLOAD: 
+
+TIMESTAMP: 2026-05-10T16:34:24.662281Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:24,662 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:24.604421Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:24,604 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:24.199564Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:24,200 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:24.178838Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:24,179 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:23.173368Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:23,173 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:23.004360Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:23,004 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:22.836688Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:22,836 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:22.190882Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:22,190 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:22.024580Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:22,024 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:21.954187Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:21,954 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:21.234361Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:21,234 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:21.104126Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:21,103 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:20.841563Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:20,842 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:20.378173Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:20,378 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:20.282524Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:20,282 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:20.097756Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:20,098 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:19.737765Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     169.254.169.126:22210 - "GET /status/cmp_20260510_162835_225b0a HTTP/1.1" 200 OK
+
+TIMESTAMP: 2026-05-10T16:34:19.679812Z
+SEVERITY: INFO
+TEXT_PAYLOAD: 
+
+TIMESTAMP: 2026-05-10T16:34:19.050782Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:19,051 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:19.014403Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:19,015 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:18.797566Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:18,798 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:18.637706Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:18,638 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:18.012911Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:18,013 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:17.273144Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:17,273 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:16.563898Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:16,564 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:16.499219Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:16,499 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:16.467884Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:16,468 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:16.394298Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:16,394 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:16.206169Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:16,206 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:15.498916Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:15,499 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:14.881923Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:14,882 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:14.732199Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:14,731 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:14.659132Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     169.254.169.126:25120 - "GET /status/cmp_20260510_162835_225b0a HTTP/1.1" 200 OK
+
+TIMESTAMP: 2026-05-10T16:34:14.594286Z
+SEVERITY: INFO
+TEXT_PAYLOAD: 
+
+TIMESTAMP: 2026-05-10T16:34:14.223081Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:14,223 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:14.221995Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:14,222 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:14.178317Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:14,178 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:13.624105Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:13,623 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:13.169971Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:13,170 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:12.773577Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:12,774 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:12.539157Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:12,539 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:12.405108Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:12,404 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:12.171875Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:12,171 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:11.373020Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:11,373 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:10.972502Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:10,973 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:10.734199Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:10,734 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:10.642356Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:10,642 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:10.485200Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:10,484 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:10.214960Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:10,215 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:09.576499Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     169.254.169.126:30918 - "GET /status/cmp_20260510_162835_225b0a HTTP/1.1" 200 OK
+
+TIMESTAMP: 2026-05-10T16:34:09.518437Z
+SEVERITY: INFO
+TEXT_PAYLOAD: 
+
+TIMESTAMP: 2026-05-10T16:34:09.450469Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:09,450 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:09.402089Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:09,400 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:08.928615Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:08,928 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:08.702304Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:08,702 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:08.634839Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:08,634 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:07.867294Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:07,867 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:07.451179Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:07,451 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:07.430447Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:07,429 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:06.905062Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:06,905 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:06.470844Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:06,471 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:05.913067Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:05,912 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:05.593981Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:05,593 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:05.552680Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:05,551 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:05.523560Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:05,524 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:04.959387Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:04,959 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:04.664072Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:04,664 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:04.498239Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     169.254.169.126:30916 - "GET /status/cmp_20260510_162835_225b0a HTTP/1.1" 200 OK
+
+TIMESTAMP: 2026-05-10T16:34:04.429651Z
+SEVERITY: INFO
+TEXT_PAYLOAD: 
+
+TIMESTAMP: 2026-05-10T16:34:03.999520Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:03,999 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:03.991257Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:03,990 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:03.573735Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:03,572 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:03.427450Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:03,427 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:02.965759Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:02,965 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:02.827649Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:02,827 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:01.895011Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:01,895 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:01.773767Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:01,773 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:01.753406Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:01,753 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:01.739733Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:01,739 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:01.348529Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:01,348 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:34:01.202646Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:34:01,202 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:59.886705Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:59,887 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:59.539472Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:59,540 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:59.513337Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:59,513 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:59.411848Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     169.254.169.126:22192 - "GET /status/cmp_20260510_162835_225b0a HTTP/1.1" 200 OK
+
+TIMESTAMP: 2026-05-10T16:33:59.378865Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:59,379 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:59.340197Z
+SEVERITY: INFO
+TEXT_PAYLOAD: 
+
+TIMESTAMP: 2026-05-10T16:33:58.795766Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:58,795 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:58.166820Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:58,167 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:57.768797Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:57,767 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:57.753487Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:57,754 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:57.482200Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:57,482 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:57.318859Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:57,319 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:56.850122Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:56,849 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:56.448013Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:56,448 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:55.977594Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:55,977 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:55.619692Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:55,620 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:55.574767Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:55,575 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:54.764582Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:54,764 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:54.748084Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:54,748 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:54.413889Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:54,414 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:54.324739Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     169.254.169.126:22176 - "GET /status/cmp_20260510_162835_225b0a HTTP/1.1" 200 OK
+
+TIMESTAMP: 2026-05-10T16:33:54.246055Z
+SEVERITY: INFO
+TEXT_PAYLOAD: 
+
+TIMESTAMP: 2026-05-10T16:33:54.155185Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:54,154 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:54.056877Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:54,057 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:53.971288Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:53,971 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:53.025721Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:53,026 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:52.871687Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:52,872 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:52.532242Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:52,532 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:52.371667Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:52,372 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:52.174472Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:52,175 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:51.610920Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:51,611 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:50.823663Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:50,824 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:50.635835Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:50,636 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:50.363098Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:50,363 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:50.251236Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:50,251 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:50.118634Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:50,119 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:50.062914Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:50,063 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:49.262358Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:49,262 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:49.229865Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     169.254.169.126:38902 - "GET /status/cmp_20260510_162835_225b0a HTTP/1.1" 200 OK
+
+TIMESTAMP: 2026-05-10T16:33:49.160004Z
+SEVERITY: INFO
+TEXT_PAYLOAD: 
+
+TIMESTAMP: 2026-05-10T16:33:49.091189Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:49,091 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:48.725897Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:48,725 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:48.702668Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:48,702 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:48.265837Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:48,265 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:48.119849Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:48,119 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:47.428835Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:47,429 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:47.256125Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:47,256 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:47.109191Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:47,109 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:47.072541Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:47,073 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:46.186259Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:46,179 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:46.118385Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:46,118 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:45.474888Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:45,475 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:45.224586Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:45,224 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:45.222942Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:45,223 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:45.016678Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:45,016 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:44.142081Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     169.254.169.126:38890 - "GET /status/cmp_20260510_162835_225b0a HTTP/1.1" 200 OK
+
+TIMESTAMP: 2026-05-10T16:33:44.088144Z
+SEVERITY: INFO
+TEXT_PAYLOAD: 
+
+TIMESTAMP: 2026-05-10T16:33:43.833852Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:43,834 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:43.628502Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:43,629 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:43.599860Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:43,600 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:43.572699Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:43,572 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:43.293895Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:43,294 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:42.469491Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:42,469 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:42.409199Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:42,408 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:42.153095Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:42,153 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:41.950937Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:41,951 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:41.891551Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:41,892 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:41.747429Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:41,747 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:40.861670Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:40,860 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:40.565545Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:40,565 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:40.506806Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:40,506 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:40.448243Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:40,447 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:40.323874Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:40,324 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:40.041202Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:40,041 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:39.069404Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     169.254.169.126:26770 - "GET /status/cmp_20260510_162835_225b0a HTTP/1.1" 200 OK
+
+TIMESTAMP: 2026-05-10T16:33:39.017418Z
+SEVERITY: INFO
+TEXT_PAYLOAD: 
+
+TIMESTAMP: 2026-05-10T16:33:38.886564Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:38,887 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:38.740096Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:38,740 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:38.566276Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:38,565 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:38.490711Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:38,489 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:38.482032Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:38,481 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:38.238006Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:38,238 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:37.225670Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:37,225 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:37.182059Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:37,182 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:36.948825Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:36,948 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:36.606271Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:36,606 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:36.413801Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:36,413 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:36.308663Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:36,308 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:35.191234Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:35,191 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:35.039689Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:35,040 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:34.966413Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:34,966 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:34.876405Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:34,877 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:34.809285Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:34,809 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:34.192111Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:34,190 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:34.000062Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     169.254.169.126:26760 - "GET /status/cmp_20260510_162835_225b0a HTTP/1.1" 200 OK
+
+TIMESTAMP: 2026-05-10T16:33:33.944990Z
+SEVERITY: INFO
+TEXT_PAYLOAD: 
+
+TIMESTAMP: 2026-05-10T16:33:33.403395Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:33,402 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:33.350040Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:33,350 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:33.091815Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:33,092 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:32.866367Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:32,866 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:32.349155Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:32,349 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:32.265641Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:32,266 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:31.330705Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:31,330 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:30.989523Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:30,990 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:30.942889Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:30,943 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:30.719095Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:30,719 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:30.360143Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:30,360 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:30.353842Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:30,354 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:29.430875Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:29,431 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:28.962019Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:28,962 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:28.928580Z
+SEVERITY: 
+TEXT_PAYLOAD: INFO:     169.254.169.126:30750 - "GET /status/cmp_20260510_162835_225b0a HTTP/1.1" 200 OK
+
+TIMESTAMP: 2026-05-10T16:33:28.903026Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:28,903 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:28.895288Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:28,894 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:28.852317Z
+SEVERITY: INFO
+TEXT_PAYLOAD: 
+
+TIMESTAMP: 2026-05-10T16:33:28.635455Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:28,636 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:28.112779Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:28,113 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:27.911350Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:27,911 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:27.264161Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:27,264 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
+
+TIMESTAMP: 2026-05-10T16:33:27.256916Z
+SEVERITY: 
+TEXT_PAYLOAD: 2026-05-10 16:33:27,257 httpx INFO HTTP Request: POST https://dev-aif-chat-ai-postventa.cognitiveservices.azure.com/openai/deployments/gpt-5.1-chat/chat/completions?api-version=2024-12-01-preview "HTTP/1.1 200 OK"
